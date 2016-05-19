@@ -27,11 +27,7 @@ public class Member extends User implements java.io.Serializable {
 		if (o == null || getClass() != o.getClass()) return false;
 
 		Member member = (Member) o;
-
-		if (!mmemberId.equals(member.mmemberId)) return false;
-		if (!mmemberUserName.equals(member.mmemberUserName)) return false;
-		if (!mmemberGroupId.equals(member.mmemberGroupId)) return false;
-		return mmemberGroupHxid.equals(member.mmemberGroupHxid);
+		return (mmemberUserName.equals(member.mmemberUserName)&&mmemberGroupHxid.equals(member.mmemberGroupHxid)&&mmemberId.equals(member.mmemberId)&&mmemberGroupId.equals(member.mmemberGroupId));
 
 	}
 
