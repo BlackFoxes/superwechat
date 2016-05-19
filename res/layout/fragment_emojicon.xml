@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
-        <com.easemob.chatuidemo.widget.emojicon.CirclePageIndicator
+        <com.easemob.superwechat.widget.emojicon.CirclePageIndicator
             android:id="@+id/indicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
