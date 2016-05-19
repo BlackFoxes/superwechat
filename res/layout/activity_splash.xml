@@ -2,7 +2,7 @@
     android:id="@+id/splash_root"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/btn_white_normal_shape"
+    android:background="#fff"
      >
 
     <ImageView
