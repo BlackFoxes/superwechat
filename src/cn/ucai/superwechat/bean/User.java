@@ -17,7 +17,34 @@ public class User extends Location implements java.io.Serializable {
 	private String muserPassword;
 	private String muserNick;
 	private Integer muserUnreadMsgCount;
+	private String Header;
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		User user = (User) o;
+
+		if (!muserName.equals(user.muserName)) return false;
+		return Header.equals(user.Header);
+
+	}
+
+	@Override
+	public int hashCode() {
+		int result = muserName.hashCode();
+		result = 31 * result + Header.hashCode();
+		return result;
+	}
+
+	public String getHeader() {
+		return Header;
+	}
+
+	public void setHeader(String header) {
+		Header = header;
+	}
 	// Constructors
 
 	/** default constructor */
