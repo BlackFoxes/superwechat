@@ -60,7 +60,7 @@ import cn.ucai.superwechat.Constant;
 import cn.ucai.superwechat.DemoHXSDKHelper;
 import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.db.InviteMessgeDao;
-import cn.ucai.superwechat.db.UserDao;
+import cn.ucai.superwechat.db.EMUserDao;
 import cn.ucai.superwechat.domain.InviteMessage;
 import cn.ucai.superwechat.domain.InviteMessage.InviteMesageStatus;
 import cn.ucai.superwechat.domain.User;
@@ -134,7 +134,7 @@ public class MainActivity extends BaseActivity implements EMEventListener {
 		}
 
 		inviteMessgeDao = new InviteMessgeDao(this);
-		userDao = new UserDao(this);
+		userDao = new EMUserDao(this);
 		// 这个fragment只显示好友和群组的聊天记录
 		// chatHistoryFragment = new ChatHistoryFragment();
 		// 显示所有人消息记录的fragment
@@ -246,7 +246,7 @@ public class MainActivity extends BaseActivity implements EMEventListener {
                  // 存入内存
                 ((DemoHXSDKHelper)HXSDKHelper.getInstance()).setContactList(userlist);
                  // 存入db
-                UserDao dao = new UserDao(context);
+                EMUserDao dao = new EMUserDao(context);
                 List<User> users = new ArrayList<User>(userlist.values());
                 dao.saveContactList(users);
 
@@ -505,7 +505,7 @@ public class MainActivity extends BaseActivity implements EMEventListener {
 	}
 
 	private InviteMessgeDao inviteMessgeDao;
-	private UserDao userDao;
+	private EMUserDao userDao;
 
 	/***
 	 * 好友变化listener
