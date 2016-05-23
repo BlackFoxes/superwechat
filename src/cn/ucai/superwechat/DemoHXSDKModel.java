@@ -22,7 +22,7 @@ import cn.ucai.superwechat.applib.model.DefaultHXSDKModel;
 import cn.ucai.superwechat.db.DemoDBManager;
 import cn.ucai.superwechat.db.EMUserDao;
 import cn.ucai.superwechat.domain.RobotUser;
-import cn.ucai.superwechat.domain.User;
+import cn.ucai.superwechat.domain.EMUser;
 
 public class DemoHXSDKModel extends DefaultHXSDKModel {
 
@@ -39,18 +39,18 @@ public class DemoHXSDKModel extends DefaultHXSDKModel {
         return true;
     }
     
-    public boolean saveContactList(List<User> contactList) {
+    public boolean saveContactList(List<EMUser> contactList) {
         EMUserDao dao = new EMUserDao(context);
         dao.saveContactList(contactList);
         return true;
     }
 
-    public Map<String, User> getContactList() {
+    public Map<String, EMUser> getContactList() {
         EMUserDao dao = new EMUserDao(context);
         return dao.getContactList();
     }
     
-    public void saveContact(User user){
+    public void saveContact(EMUser user){
     	EMUserDao dao = new EMUserDao(context);
     	dao.saveContact(user);
     }

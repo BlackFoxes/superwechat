@@ -32,6 +32,7 @@ public class SuperWeChatApplication extends Application {
 	private static SuperWeChatApplication instance;
 	// login user name
 	public final String PREF_USERNAME = "username";
+	public static String SERVER_ROOT = "Http://10.0.2.2:8080/SuperWeChatServer/Server";
 	
 	/**
 	 * 当前用户nickname,为了苹果推送不是userid而是昵称
