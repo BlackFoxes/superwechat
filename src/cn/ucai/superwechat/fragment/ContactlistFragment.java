@@ -160,6 +160,7 @@ public class ContactlistFragment extends Fragment {
 	}
 
 	@Override
+
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		//防止被T后，没点确定按钮然后按了home键，长期在后台又进app导致的crash
