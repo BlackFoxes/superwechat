@@ -523,7 +523,7 @@ public class ContactlistFragment extends Fragment {
 		for (Contact contact : mContactList) {
 			UserUtils.setUserHearder(contact.getMContactCname(),contact);
 		}
-		// 排序
+		// 排序的修改
 		Collections.sort(this.mContactList, new Comparator<Contact>() {
 
 			@Override
