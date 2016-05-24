@@ -55,8 +55,8 @@ public class UserDao extends SQLiteOpenHelper {
             String nick = c.getString(c.getColumnIndex(I.User.NICK));
             String password = c.getString(c.getColumnIndex(I.User.PASSWORD));
             int unReaderMsgCount = c.getInt(c.getColumnIndex(I.User.UN_READ_MSG_COUNT));
-            return new User(uid,userName,password,nick,unReaderMsgCount);
-        }
+        return new User(uid,userName,password,nick,unReaderMsgCount);
+    }
         c.close();
         return null;
     }
