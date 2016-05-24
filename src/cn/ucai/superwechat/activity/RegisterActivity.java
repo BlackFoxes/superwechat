@@ -15,12 +15,11 @@ package cn.ucai.superwechat.activity;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -35,9 +34,9 @@ import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.bean.Message;
+import cn.ucai.superwechat.data.OkHttpUtils;
 import cn.ucai.superwechat.listener.OnSetAvatarListener;
 import cn.ucai.superwechat.utils.ImageUtils;
-import cn.ucai.superwechat.data.OkHttpUtils;
 import cn.ucai.superwechat.utils.Utils;
 
 /**
@@ -45,124 +44,160 @@ import cn.ucai.superwechat.utils.Utils;
  * 
  */
 public class RegisterActivity extends BaseActivity {
+	static final String TAG = RegisterActivity.class.getName();
+
+	Activity mContext;
+
 	private EditText userNameEditText;
+	private EditText userNickEditText;
 	private EditText passwordEditText;
-	private EditText userNikeEditText;
 	private EditText confirmPwdEditText;
-	private ImageView iv_avatar;
-	private Button btnLogin,btnRegister;
-	private Context context;
-	private Activity mActivity;
-	private String avatarName;
-	OnSetAvatarListener mOnSetAvatarListener;
-	String username;
-	String pwd;
-	String nike;
-	Context mContext;
-	ProgressDialog pd;
+
+	ImageView ivAvatar;
+
+	OnSetAvatarListener mOnSetAvatarlistener;
+	private String mAvatarName;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_register);
 		mContext = this;
-
 		initView();
 		setListener();
 	}
 
-	private void setListener() {
-		setAvatarListener();
-		setOnLoginListener();
-		setOnRegisterListener();
+	private void initView() {
+		userNameEditText = (EditText) findViewById(R.id.username);
+		userNickEditText = (EditText) findViewById(R.id.ed_nike);
+		passwordEditText = (EditText) findViewById(R.id.password);
+		confirmPwdEditText = (EditText) findViewById(R.id.confirm_password);
+
+		ivAvatar = (ImageView) findViewById(R.id.iv_avatar);
 	}
 
+	private void setListener() {
+		setOnRegisterListener();
+		setOnLoginListener();
+		onSetAvatarListener();
+	}
 
-	private void setAvatarListener() {
+	private void onSetAvatarListener() {
 		findViewById(R.id.layout_avatar).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				mOnSetAvatarListener = new OnSetAvatarListener(mActivity, R.id.Register, getAvatarName(), I.AVATAR_TYPE_USER_PATH);
-
+				mOnSetAvatarlistener = new OnSetAvatarListener(mContext,R.id.Register,getAvatarName(), I.AVATAR_TYPE_USER_PATH);
 			}
 		});
+	}
+
+	private String getAvatarName() {
+		mAvatarName = System.currentTimeMillis()+"";
+		return mAvatarName;
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		if (resultCode == RESULT_OK) {
-			mOnSetAvatarListener.setAvatar(requestCode,data,iv_avatar);
+		if (resultCode==RESULT_OK){
+			mOnSetAvatarlistener.setAvatar(requestCode,data,ivAvatar);
 		}
 	}
 
-	private void initView() {
-		userNameEditText = (EditText) findViewById(R.id.username		);
-		passwordEditText = (EditText) findViewById(R.id.password);
-		userNikeEditText = (EditText) findViewById(R.id.ed_nike);
-		confirmPwdEditText = (EditText) findViewById(R.id.confirm_password);
-		iv_avatar = (ImageView) findViewById(R.id.iv_avatar);
-		btnLogin = (Button) findViewById(R.id.btn_login);
-		btnRegister = (Button) findViewById(R.id.btn_register);
-		context = this;
-		mActivity = this;
+	private void setOnLoginListener() {
+		findViewById(R.id.btn_login).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				//finish();
+				back(v);
+			}
+		});
 	}
 
-	/**
-	 * 注册
-	 * 
-	 *
-	 */
-	public void setOnRegisterListener() {
-		btnRegister.setOnClickListener(new View.OnClickListener() {
+	String username;
+	String nick;
+	String pwd;
+	//String avatar;
+	ProgressDialog pd;
+	private void setOnRegisterListener() {
+		findViewById(R.id.btn_register).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				username = userNameEditText.getText().toString().trim();
+				nick = userNickEditText.getText().toString().trim();
 				pwd = passwordEditText.getText().toString().trim();
-				nike = userNameEditText.getText().toString().trim();
 				String confirm_pwd = confirmPwdEditText.getText().toString().trim();
+				//avatar = getAvatarName();
 				if (TextUtils.isEmpty(username)) {
 					userNameEditText.requestFocus();
 					userNameEditText.setError(getResources().getString(R.string.User_name_cannot_be_empty));
-
 					return;
-				} else if (!username.matches("[\\w][\\w\\d_]+")) {
+				}else if (!username.matches("[\\w][\\w\\d_]+")){
 					userNameEditText.requestFocus();
 					userNameEditText.setError(getResources().getString(R.string.User_name_cannot_be_wd));
-				} else if (TextUtils.isEmpty(nike)) {
-					userNikeEditText.requestFocus();
-					userNikeEditText.setError(getResources().getString(R.string.Nick_name_cannot_be_empty));
+					return;
+				}else if (TextUtils.isEmpty(nick)){
+					userNickEditText.requestFocus();
+					userNickEditText.setError(getResources().getString(R.string.Nick_name_cannot_be_empty));
 				} else if (TextUtils.isEmpty(pwd)) {
 					passwordEditText.requestFocus();
 					passwordEditText.setError(getResources().getString(R.string.Password_cannot_be_empty));
 					return;
 				} else if (TextUtils.isEmpty(confirm_pwd)) {
 					confirmPwdEditText.requestFocus();
-					confirmPwdEditText.setError( getResources().getString(R.string.Confirm_password_cannot_be_empty));
+					confirmPwdEditText.setError(getResources().getString(R.string.Confirm_password_cannot_be_empty));
 					return;
 				} else if (!pwd.equals(confirm_pwd)) {
-					Toast.makeText(context, getResources().getString(R.string.Two_input_password), Toast.LENGTH_SHORT).show();
+					confirmPwdEditText.requestFocus();
+					confirmPwdEditText.setError(getResources().getString(R.string.Two_input_password));
+					//Toast.makeText(mContext, getResources().getString(R.string.Two_input_password), Toast.LENGTH_SHORT).show();
 					return;
 				}
 
 				if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(pwd)) {
-					pd = new ProgressDialog(context);
+					pd = new ProgressDialog(mContext);
 					pd.setMessage(getResources().getString(R.string.Is_the_registered));
 					pd.show();
-
-
-
+					registerAppAvatar();
 				}
 			}
 		});
-
 	}
 
-	/**
-	 *注册环信账号
-	 */
+	private void registerAppAvatar(){
+		File file = new File(ImageUtils.getAvatarPath(mContext,I.AVATAR_TYPE_USER_PATH),
+				mAvatarName+I.AVATAR_SUFFIX_JPG);
+		OkHttpUtils<Message> utils = new OkHttpUtils<>();
+		utils.url(SuperWeChatApplication.SERVER_ROOT)
+				.addParam(I.KEY_REQUEST,I.REQUEST_REGISTER)
+				.addParam(I.User.USER_NAME,username)
+				.addParam(I.User.NICK,nick)
+				.addParam(I.User.PASSWORD,pwd)
+				.addFile(file)
+				.targetClass(Message.class)
+				.execute(new OkHttpUtils.OnCompleteListener<Message>() {
+					@Override
+					public void onSuccess(Message result) {
+						if (result.isResult()){
+							EMServerRegister();
+						}else {
+							pd.dismiss();
+							Utils.showToast(mContext,Utils.getResourceString(mContext,result.getMsg()),
+									Toast.LENGTH_LONG);
+							Log.e(TAG, "register fail,error:" + result.getMsg());
+						}
+					}
 
-	private void registerEMServer() {
+					@Override
+					public void onError(String error) {
+						pd.dismiss();
+						Utils.showToast(mContext,error,Toast.LENGTH_LONG);
+						Log.i(TAG,"register fail error : " +error);
+					}
+				});
+	}
+
+	private void EMServerRegister(){
 		new Thread(new Runnable() {
 			public void run() {
 				try {
@@ -179,11 +214,13 @@ public class RegisterActivity extends BaseActivity {
 						}
 					});
 				} catch (final EaseMobException e) {
+					
+					unregisterAppAvatar();
+
 					runOnUiThread(new Runnable() {
 						public void run() {
-							if (!RegisterActivity.this.isFinishing() )
+							if (!RegisterActivity.this.isFinishing())
 								pd.dismiss();
-
 							int errorCode=e.getErrorCode();
 							if(errorCode==EMError.NONETWORK_ERROR){
 								Toast.makeText(getApplicationContext(), getResources().getString(R.string.network_anomalies), Toast.LENGTH_SHORT).show();
@@ -201,58 +238,30 @@ public class RegisterActivity extends BaseActivity {
 				}
 			}
 		}).start();
-
 	}
-
-	private String getAvatarName() {
-		avatarName = System.currentTimeMillis()+"";
-		return avatarName;
-	}
-
-	public void back(View view) {
-		finish();
-	}
-
-	public void setOnLoginListener() {
-		btnLogin.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				finish();
-			}
-		});
-
-	}
-
-	private void registerAppSever() {
-		File file = new File(ImageUtils.getAvatarPath(mContext, I.AVATAR_TYPE_USER_PATH),
-				avatarName + I.AVATAR_SUFFIX_JPG);
-		final OkHttpUtils<Message> utils = new OkHttpUtils<Message>();
+//http://10.0.2.2:8080/SuperWeChatServer/Server?request=unregister&m_user_name=
+	private void unregisterAppAvatar() {
+		OkHttpUtils<Message> utils = new OkHttpUtils<>();
 		utils.url(SuperWeChatApplication.SERVER_ROOT)
-				.addParam(I.KEY_REQUEST,I.REQUEST_REGISTER)
+				.addParam(I.KEY_REQUEST,I.REQUEST_UNREGISTER)
 				.addParam(I.User.USER_NAME,username)
-				.addParam(I.User.PASSWORD,pwd)
-				.addParam(I.User.NICK,nike)
 				.targetClass(Message.class)
-				.addFile(file)
 				.execute(new OkHttpUtils.OnCompleteListener<Message>() {
 					@Override
 					public void onSuccess(Message result) {
-						if (result.isResult()) {
-
-
-						} else {
-
-							Utils.showToast(mContext,Utils.getResourceString(mContext,result.getMsg()),Toast);
-						}
-
+						pd.dismiss();
+						Utils.showToast(mContext,R.string.Registration_failed,Toast.LENGTH_SHORT);
 					}
 
 					@Override
 					public void onError(String error) {
-
+						pd.dismiss();
+						Log.e(TAG, error);
 					}
 				});
+	}
 
-
+	public void back(View view) {
+		finish();
 	}
 }

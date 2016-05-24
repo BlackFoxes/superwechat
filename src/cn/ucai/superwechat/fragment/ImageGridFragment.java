@@ -1,7 +1,4 @@
-package cn.ucai.superwechat.activity;
-
-import java.util.ArrayList;
-import java.util.List;
+package cn.ucai.superwechat.fragment;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -30,15 +27,20 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.easemob.util.DateUtils;
+import com.easemob.util.EMLog;
+import com.easemob.util.TextFormater;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import cn.ucai.superwechat.BuildConfig;
+import cn.ucai.superwechat.activity.RecorderVideoActivity;
 import cn.ucai.superwechat.domain.VideoEntity;
 import cn.ucai.superwechat.video.util.ImageCache;
 import cn.ucai.superwechat.video.util.ImageResizer;
 import cn.ucai.superwechat.video.util.Utils;
 import cn.ucai.superwechat.widget.RecyclingImageView;
-import com.easemob.util.DateUtils;
-import com.easemob.util.EMLog;
-import com.easemob.util.TextFormater;
 
 public class ImageGridFragment extends Fragment implements OnItemClickListener {
 

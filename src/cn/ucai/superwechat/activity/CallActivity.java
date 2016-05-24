@@ -49,8 +49,6 @@ public class CallActivity extends BaseActivity {
     /**
      * 播放拨号响铃
      * 
-     * @param sound
-     * @param number
      */
     protected int playMakeCallSounds() {
         try {

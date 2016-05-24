@@ -13,9 +13,6 @@
  */
 package cn.ucai.superwechat.adapter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
@@ -25,14 +22,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
-import android.widget.ImageView;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
+
+import com.android.volley.toolbox.NetworkImageView;
+import com.easemob.util.EMLog;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import cn.ucai.superwechat.Constant;
 import cn.ucai.superwechat.domain.EMUser;
 import cn.ucai.superwechat.utils.UserUtils;
-import com.easemob.util.EMLog;
 
 /**
  * 简单的好友Adapter实现
@@ -60,7 +61,7 @@ public class ContactAdapter extends ArrayAdapter<EMUser>  implements SectionInde
 	}
 	
 	private static class ViewHolder {
-	    ImageView avatar;
+	    NetworkImageView avatar;
 	    TextView unreadMsgView;
 	    TextView nameTextview;
 	    TextView tvHeader;
@@ -71,7 +72,7 @@ public class ContactAdapter extends ArrayAdapter<EMUser>  implements SectionInde
  		if(convertView == null){
  		    holder = new ViewHolder();
 			convertView = layoutInflater.inflate(res, null);
-			holder.avatar = (ImageView) convertView.findViewById(cn.ucai.superwechat.R.id.avatar);
+			holder.avatar = (NetworkImageView) convertView.findViewById(cn.ucai.superwechat.R.id.avatar);
 			holder.unreadMsgView = (TextView) convertView.findViewById(cn.ucai.superwechat.R.id.unread_msg_number);
 			holder.nameTextview = (TextView) convertView.findViewById(cn.ucai.superwechat.R.id.name);
 			holder.tvHeader = (TextView) convertView.findViewById(cn.ucai.superwechat.R.id.header);
@@ -121,7 +122,8 @@ public class ContactAdapter extends ArrayAdapter<EMUser>  implements SectionInde
 		}else{
 		    holder.nameTextview.setText(user.getNick());
 		    //设置用户头像
-			UserUtils.setUserAvatar(getContext(), username, holder.avatar);
+//			UserUtils.setUserAvatar(getContext(), username, holder.avatar);
+			UserUtils.setUserBeanAvatar(username,holder.avatar);
 			if(holder.unreadMsgView != null)
 			    holder.unreadMsgView.setVisibility(View.INVISIBLE);
 		}

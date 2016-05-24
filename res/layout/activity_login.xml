@@ -43,7 +43,7 @@
                 android:src="@drawable/icon_account" />
 
             <EditText
-                android:id="@+id/username"
+                android:id="@+id/username1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerVertical="true"
@@ -75,7 +75,7 @@
                 android:src="@drawable/icon_pwd" />
 
             <EditText
-                android:id="@+id/password"
+                android:id="@+id/password1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerVertical="true"

@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cn.ucai.superwechat.activity;
+package cn.ucai.superwechat.fragment;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,6 +49,13 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import cn.ucai.superwechat.activity.AddContactActivity;
+import cn.ucai.superwechat.activity.ChatActivity;
+import cn.ucai.superwechat.activity.GroupsActivity;
+import cn.ucai.superwechat.activity.MainActivity;
+import cn.ucai.superwechat.activity.NewFriendsMsgActivity;
+import cn.ucai.superwechat.activity.PublicChatRoomsActivity;
+import cn.ucai.superwechat.activity.RobotsActivity;
 import cn.ucai.superwechat.applib.controller.HXSDKHelper;
 import cn.ucai.superwechat.applib.controller.HXSDKHelper.HXSyncListener;
 import com.easemob.chat.EMContactManager;
@@ -272,7 +279,7 @@ public class ContactlistFragment extends Fragment {
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		if (((AdapterContextMenuInfo) menuInfo).position > 3) {
+		if (((AdapterContextMenuInfo) menuInfo).position > 1) {
 		    toBeProcessUser = adapter.getItem(((AdapterContextMenuInfo) menuInfo).position);
 		    toBeProcessUsername = toBeProcessUser.getUsername();
 			getActivity().getMenuInflater().inflate(cn.ucai.superwechat.R.menu.context_contact_list, menu);
@@ -463,13 +470,13 @@ public class ContactlistFragment extends Fragment {
 				return lhs.getUsername().compareTo(rhs.getUsername());
 			}
 		});
-
-		if(users.get(Constant.CHAT_ROBOT)!=null){
-			contactList.add(0, users.get(Constant.CHAT_ROBOT));
-		}
-		// 加入"群聊"和"聊天室"
-        if(users.get(Constant.CHAT_ROOM) != null)
-            contactList.add(0, users.get(Constant.CHAT_ROOM));
+//
+//		if(users.get(Constant.CHAT_ROBOT)!=null){
+//			contactList.add(0, users.get(Constant.CHAT_ROBOT));
+//		}
+//		// 加入"群聊"和"聊天室"
+//        if(users.get(Constant.CHAT_ROOM) != null)
+//            contactList.add(0, users.get(Constant.CHAT_ROOM));
         if(users.get(Constant.GROUP_USERNAME) != null)
             contactList.add(0, users.get(Constant.GROUP_USERNAME));
         

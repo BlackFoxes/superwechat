@@ -1,5 +1,6 @@
 package cn.ucai.superwechat.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -11,7 +12,16 @@ import android.widget.TextView;
 
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMGroupManager;
+
 import cn.ucai.superwechat.DemoHXSDKHelper;
+import cn.ucai.superwechat.I;
+import cn.ucai.superwechat.R;
+import cn.ucai.superwechat.SuperWeChatApplication;
+import cn.ucai.superwechat.bean.User;
+import cn.ucai.superwechat.db.UserDao;
+import cn.ucai.superwechat.task.DownloadAllGroupsTask;
+import cn.ucai.superwechat.task.DownloadContactListTask;
+import cn.ucai.superwechat.task.DownloadPublicGroupsTask;
 
 /**
  * 开屏页
@@ -22,14 +32,17 @@ public class SplashActivity extends BaseActivity {
 	private TextView versionText;
 	
 	private static final int sleepTime = 2000;
+	Context mContext;
 
 	@Override
 	protected void onCreate(Bundle arg0) {
-		setContentView(cn.ucai.superwechat.R.layout.activity_splash);
+		setContentView(R.layout.activity_splash);
 		super.onCreate(arg0);
 
-		rootLayout = (RelativeLayout) findViewById(cn.ucai.superwechat.R.id.splash_root);
-		versionText = (TextView) findViewById(cn.ucai.superwechat.R.id.tv_version);
+		mContext = this;
+
+		rootLayout = (RelativeLayout) findViewById(R.id.splash_root);
+		versionText = (TextView) findViewById(R.id.tv_version);
 
 		versionText.setText(getVersion());
 		AlphaAnimation animation = new AlphaAnimation(0.3f, 1.0f);
@@ -41,6 +54,19 @@ public class SplashActivity extends BaseActivity {
 	protected void onStart() {
 		super.onStart();
 
+		if (DemoHXSDKHelper.getInstance().isLogined()) {
+			String userName = SuperWeChatApplication.getInstance().getUserName();
+			UserDao dao = new UserDao(mContext);
+			User user = dao.findUserByUserName(userName);
+			SuperWeChatApplication.getInstance().setUser(user);
+
+			//下载联系人集合
+			new DownloadContactListTask(mContext, userName).execute();
+			//下载群组集合
+			new DownloadAllGroupsTask(mContext, userName).execute();
+			//下载公开群组集合
+			new DownloadPublicGroupsTask(mContext,userName, I.PAGE_ID_DEFAULT,I.PAGE_SIZE_DEFAULT).execute();
+		}
 		new Thread(new Runnable() {
 			public void run() {
 				if (DemoHXSDKHelper.getInstance().isLogined()) {
@@ -79,7 +105,7 @@ public class SplashActivity extends BaseActivity {
 	 * 获取当前应用程序的版本号
 	 */
 	private String getVersion() {
-		String st = getResources().getString(cn.ucai.superwechat.R.string.Version_number_is_wrong);
+		String st = getResources().getString(R.string.Version_number_is_wrong);
 		PackageManager pm = getPackageManager();
 		try {
 			PackageInfo packinfo = pm.getPackageInfo(getPackageName(), 0);

@@ -2,7 +2,7 @@ package cn.ucai.superwechat;
 
 public interface I {
 
-	public static interface User {
+	interface User {
 		String TABLE_NAME							=		"t_superwechat_user";
 		String USER_ID 								= 		"m_user_id";					//主键
 		String USER_NAME 							= 		"m_user_name";					//用户账号
@@ -11,7 +11,7 @@ public interface I {
 		String UN_READ_MSG_COUNT 					= 		"m_user_unread_msg_count";		//未读消息数量
 	}
 	
-	public static interface Contact {
+	interface Contact {
 		String TABLE_NAME 							= 		"t_superwechat_contact";
 		String CONTACT_ID 							= 		"m_contact_id";					//主键
 		String USER_ID 								= 		"m_contact_user_id";			//用户id
@@ -20,7 +20,7 @@ public interface I {
 		String CU_NAME 								= 		"m_contact_cname";				//好友账号
 	}
 	
-	public static interface Group {
+	interface Group {
 		String TABLE_NAME 							= 		"t_superwechat_group";
 		String GROUP_ID 							= 		"m_group_id";					// 主键
 		String HX_ID 								= 		"m_group_hxid";					//环信群组id
@@ -34,7 +34,7 @@ public interface I {
 		String ALLOW_INVITES 						= 		"m_group_allow_invites";		//是否可以邀请
 	}
 	
-	public static interface Member {
+	interface Member {
 		String TABLE_NAME 							= 		"t_superwechat_member";
 		String MEMBER_ID 							= 		"m_member_id";					//主键
 		String USER_ID 								= 		"m_member_user_id";				//用户id
@@ -44,7 +44,7 @@ public interface I {
 		String PERMISSION 							= 		"m_member_permission";			//用户对群组的权限\n0:普通用户\n1:群组所有者
 	}
 	
-	public static interface Avatar {
+	interface Avatar {
 		String TABLE_NAME 							= 		"t_superwechat_avatar";
 		String AVATAR_ID 							= 		"m_avatar_id";					//主键
 		String USER_ID 								= 		"m_avatar_user_id";				//用户id或者群组id
@@ -53,7 +53,7 @@ public interface I {
 		String AVATAR_TYPE 							= 		"m_avatar_type";				//头像类型：\n0:用户头像\n1:群组头像
 	}
 	
-	public static interface Location {
+	interface Location {
 		String TABLE_NAME 							= 		"t_superwechat_location";
 		String LOCATION_ID 							= 		"m_location_id";				//主键
 		String USER_ID 								= 		"m_location_user_id";			//用户id
@@ -64,11 +64,13 @@ public interface I {
 		String UPDATE_TIME 							= 		"m_location_last_update_time";	//最后更新时间
 	}
 
-	String AVATAR_PATH 								= 		"//C:/superwechatDB/user_avatar/";
+	String AVATAR_PATH 								= 		"D:/Third/superwechatDB-20160518/superwechatDB/";
 	String ISON8859_1 								= 		"iso8859-1";
 	String UTF_8 									= 		"utf-8";
 	String PAGE_ID 									= 		"page_id";						//分页的起始下标
 	String PAGE_SIZE 								= 		"page_size";					//分页的每页数量
+	int PAGE_ID_DEFAULT 							= 		0;								//分页的起始下标
+	int PAGE_SIZE_DEFAULT 						    = 		20;								//分页的每页数量
 	int ID_DEFAULT									=		0;								//ID默认值
 	int UN_READ_MSG_COUNT_DEFAULT					=		0;								//未读消息数量默认值
 	int GROUP_MAX_USERS_DEFAULT 					= 		-1;								//群组最大人数默认值
@@ -84,6 +86,7 @@ public interface I {
 	String AVATAR_TYPE_GROUP_PATH 					=		"group_icon";					//群组头像保存目录
 	String AVATAR_SUFFIX_PNG						=		".png";							//PNG图片后缀名
 	String AVATAR_SUFFIX_JPG						=		".jpg";							//JPG图片后缀名
+	String MSG_PREFIX_MSG							=		"msg_";							//返回的消息码前缀
 	int LOCATION_IS_SEARCH_ALLOW					=		1;								//可以被搜索到地理位置
 	int LOCATION_IS_SEARCH_INHIBIT					=		0;								//禁止被搜索到地理位置
 	int MSG_CONNECTION_SUCCESS						=  		900;							//连接服务器成功
@@ -127,8 +130,6 @@ public interface I {
 	int MSG_LOCATION_UPDATE_FAIL					=		504;							//用户更新地理位置失败
 	int MSG_UNKNOW									=		999;							//未知错误
 
-
-	String MSG_PREFIX_MSG                           =       "msg_";
 	String KEY_REQUEST 								= 		"request";
 	/** 上传图片的类型：user_avatar或group_icon */
 	String AVATAR_TYPE 								= 		"avatarType";
@@ -210,4 +211,10 @@ public interface I {
 	String REQUEST_FIND_GROUP_BY_ID					= 		"find_group_by_group_id";
 	/** 客户端发送的根据群组环信id查找群组请求 */
 	String REQUEST_FIND_GROUP_BY_HXID 				= 		"find_group_by_group_hxid";
+	/**  下载用户头像的网络请求*/
+	String REQUEST_DOWNLOAD_AVATAR_USER				=		SuperWeChatApplication.SERVER_ROOT+ "?"
+			+ KEY_REQUEST + "=" +REQUEST_DOWNLOAD_AVATAR + "&" +AVATAR_TYPE + "=";
+	/**  下载群组头像的网络请求*/
+	String REQUEST_DOWNLOAD_AVATAR_GROUP			=		SuperWeChatApplication.SERVER_ROOT+ "?"
+			+ KEY_REQUEST + "=" +REQUEST_DOWNLOAD_GROUP_AVATAR + "&" +AVATAR_TYPE + "=";
 }
