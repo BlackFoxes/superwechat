@@ -169,7 +169,12 @@ public class UserUtils {
 		}
 		((DemoHXSDKHelper) HXSDKHelper.getInstance()).saveContact(newUser);
 	}
-
+	/**
+	 * 设置hearder属性，方便通讯中对联系人按header分类显示，以及通过右侧ABCD...字母栏快速定位联系人
+	 *
+	 * @param username
+	 * @param user
+	 */
 
 	public static void setUserHearder(String username, Contact user) {
 		String headerName = null;
