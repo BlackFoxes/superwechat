@@ -75,7 +75,7 @@ public class AddContactActivity extends BaseActivity{
 	
 	
 	/**
-	 * 查找contact
+	 * 查找contact的修改，自己账号显示Dialog，Content的等价以及trim的应用
 	 */
     public void searchContact(View v) {
 
