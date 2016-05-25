@@ -26,20 +26,30 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import cn.ucai.superwechat.applib.controller.HXSDKHelper;
+import com.android.volley.Response;
+import com.android.volley.toolbox.NetworkImageView;
 import com.easemob.chat.EMContactManager;
-import cn.ucai.superwechat.SuperWeChatApplication;
+
 import cn.ucai.superwechat.DemoHXSDKHelper;
+import cn.ucai.superwechat.I;
+import cn.ucai.superwechat.R;
+import cn.ucai.superwechat.SuperWeChatApplication;
+import cn.ucai.superwechat.applib.controller.HXSDKHelper;
+import cn.ucai.superwechat.bean.User;
+import cn.ucai.superwechat.data.ApiParams;
+import cn.ucai.superwechat.data.GsonRequest;
+import cn.ucai.superwechat.utils.UserUtils;
 
 public class AddContactActivity extends BaseActivity{
 	private EditText editText;
 	private LinearLayout searchedUserLayout;
 	private TextView nameText,mTextView;
 	private Button searchBtn;
-	private ImageView avatar;
+	private NetworkImageView avatar;
 	private InputMethodManager inputMethodManager;
 	private String toAddUsername;
 	private ProgressDialog progressDialog;
+	TextView mTvNothing;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -52,10 +62,11 @@ public class AddContactActivity extends BaseActivity{
 		mTextView.setText(strAdd);
 		String strUserName = getResources().getString(cn.ucai.superwechat.R.string.user_name);
 		editText.setHint(strUserName);
+		mTvNothing = (TextView) findViewById(R.id.wujieguo);
 		searchedUserLayout = (LinearLayout) findViewById(cn.ucai.superwechat.R.id.ll_user);
 		nameText = (TextView) findViewById(cn.ucai.superwechat.R.id.name);
 		searchBtn = (Button) findViewById(cn.ucai.superwechat.R.id.search);
-		avatar = (ImageView) findViewById(cn.ucai.superwechat.R.id.avatar);
+		avatar = (NetworkImageView) findViewById(cn.ucai.superwechat.R.id.avatar);
 		inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 	}
 	
@@ -77,15 +88,44 @@ public class AddContactActivity extends BaseActivity{
 			}
 			
 			// TODO 从服务器获取此contact,如果不存在提示不存在此用户
-			
-			//服务器存在此用户，显示此用户和添加按钮
-			searchedUserLayout.setVisibility(View.VISIBLE);
-			nameText.setText(toAddUsername);
+			try {
+				String path = new ApiParams()
+						.with(I.User.USER_NAME,toAddUsername)
+						.getRequestUrl(I.REQUEST_FIND_USER);
+                executeRequest(new GsonRequest<User>(path, User.class,
+                        responseFindUserListener(),errorListener()));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+
 			
 		} 
-	}	
-	
-	/**
+	}
+
+    private Response.Listener<User> responseFindUserListener() {
+        return new Response.Listener<User>() {
+            @Override
+            public void onResponse(User user) {
+                if (user != null) {
+                    //服务器存在此用户，显示此用户和添加按钮
+                    searchedUserLayout.setVisibility(View.VISIBLE);
+                    mTvNothing.setVisibility(View.GONE);
+                    nameText.setText(toAddUsername);
+                    UserUtils.setUserBeanAvatar(user,avatar);
+                    UserUtils.setUserBeanNick(user,nameText);
+
+                } else {
+                    searchedUserLayout.setVisibility(View.GONE);
+                    mTvNothing.setVisibility(View.VISIBLE);
+                }
+
+            }
+        };
+    }
+
+
+    /**
 	 *  添加contact
 	 * @param view
 	 */

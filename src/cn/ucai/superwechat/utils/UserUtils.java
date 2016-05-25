@@ -72,6 +72,14 @@ public class UserUtils {
 		}
 
 	}
+	public static void setUserBeanAvatar(User user , NetworkImageView imageView) {
+		User contact = user;
+		if (contact !=null && contact.getMUserName()!=null) {
+			setUserAvatar(getAvatarPath(user.getMUserName()),imageView);
+
+		}
+
+	}
 
 	private static void setUserAvatar(String url,NetworkImageView imageView) {
 		if (url ==null || url.isEmpty())return;
@@ -149,6 +157,22 @@ public class UserUtils {
 		}
 
 	}
+	public static void setUserBeanNick(User user,TextView textView) {
+		User userBeanInfo = user;
+		if (userBeanInfo != null) {
+			if (userBeanInfo.getMUserNick() != null) {
+
+				textView.setText(userBeanInfo.getMUserNick());
+			} else if (userBeanInfo.getMUserName() != null) {
+
+				textView.setText(userBeanInfo.getMUserName());
+			}
+		} else {
+			textView.setText(user.getMUserName());
+		}
+
+	}
+
 
 	/**
      * 设置当前用户昵称
