@@ -13,9 +13,6 @@
  */
 package cn.ucai.superwechat.adapter;
 
-import java.util.Date;
-import java.util.List;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,10 +28,14 @@ import com.easemob.chat.EMContact;
 import com.easemob.chat.EMConversation;
 import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMMessage;
+import com.easemob.util.DateUtils;
+
+import java.util.Date;
+import java.util.List;
+
 import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.utils.CommonUtils;
 import cn.ucai.superwechat.utils.SmileUtils;
-import com.easemob.util.DateUtils;
 
 /**
  * 聊天记录adpater
