@@ -21,7 +21,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,11 +29,14 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.NetworkImageView;
 import com.easemob.chat.EMContactManager;
 
+import java.util.HashMap;
+
 import cn.ucai.superwechat.DemoHXSDKHelper;
 import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.applib.controller.HXSDKHelper;
+import cn.ucai.superwechat.bean.Contact;
 import cn.ucai.superwechat.bean.User;
 import cn.ucai.superwechat.data.ApiParams;
 import cn.ucai.superwechat.data.GsonRequest;
@@ -50,13 +52,14 @@ public class AddContactActivity extends BaseActivity{
 	private String toAddUsername;
 	private ProgressDialog progressDialog;
 	TextView mTvNothing;
+//    Context mContext;//和this是等价的还有AddContactactivity是等价的
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+//        mContext = this;
 		setContentView(cn.ucai.superwechat.R.layout.activity_add_contact);
 		mTextView = (TextView) findViewById(cn.ucai.superwechat.R.id.add_list_friends);
-		
 		editText = (EditText) findViewById(cn.ucai.superwechat.R.id.edit_note);
 		String strAdd = getResources().getString(cn.ucai.superwechat.R.string.add_friend);
 		mTextView.setText(strAdd);
@@ -73,47 +76,60 @@ public class AddContactActivity extends BaseActivity{
 	
 	/**
 	 * 查找contact
-	 * @param v
 	 */
-	public void searchContact(View v) {
-		final String name = editText.getText().toString();
-		String saveText = searchBtn.getText().toString();
-		
-		if (getString(cn.ucai.superwechat.R.string.button_search).equals(saveText)) {
-			toAddUsername = name;
-			if(TextUtils.isEmpty(name)) {
-				String st = getResources().getString(cn.ucai.superwechat.R.string.Please_enter_a_username);
-				startActivity(new Intent(this, AlertDialog.class).putExtra("msg", st));
-				return;
-			}
-			
-			// TODO 从服务器获取此contact,如果不存在提示不存在此用户
-			try {
-				String path = new ApiParams()
-						.with(I.User.USER_NAME,toAddUsername)
-						.getRequestUrl(I.REQUEST_FIND_USER);
-                executeRequest(new GsonRequest<User>(path, User.class,
-                        responseFindUserListener(),errorListener()));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+    public void searchContact(View v) {
+
+                final String name = editText.getText().toString();
+                if(TextUtils.isEmpty(name)) {
+                    String st = getResources().getString(cn.ucai.superwechat.R.string.Please_enter_a_username);
+                    startActivity(new Intent(AddContactActivity.this, AlertDialog.class).putExtra("msg", st));
+                    return;
+                }
+
+                if(SuperWeChatApplication.getInstance().getUserName().equals(name.trim())){
+                    String str = getString(cn.ucai.superwechat.R.string.not_add_myself);
+                    startActivity(new Intent(AddContactActivity.this, AlertDialog.class).putExtra("msg", str));
+                    return;
+                }
+
+                toAddUsername = name;
+
+                // TODO 从服务器获取此contact,如果不存在提示不存在此用户
+                try {
+                    String path = new ApiParams().with(I.User.USER_NAME,name)
+                            .getRequestUrl(I.REQUEST_FIND_USER);
+                    executeRequest(new GsonRequest<User>(path,User.class,responseFindUserListener(),errorListener()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
 
-			
-		} 
-	}
+
+
+
+    }
+
 
     private Response.Listener<User> responseFindUserListener() {
         return new Response.Listener<User>() {
             @Override
             public void onResponse(User user) {
                 if (user != null) {
-                    //服务器存在此用户，显示此用户和添加按钮
-                    searchedUserLayout.setVisibility(View.VISIBLE);
+                    HashMap<String, Contact> userList =
+                            SuperWeChatApplication.getInstance().getUserList();
+
+                    if (userList.containsKey(user.getMUserName())) {
+                        startActivity(new Intent(AddContactActivity.this, UserProfileActivity.class).putExtra("username", user.getMUserName()));
+                    } else {
+                        //服务器存在此用户，显示此用户和添加按钮
+                        searchedUserLayout.setVisibility(View.VISIBLE);
+                        nameText.setText(toAddUsername);
+                        UserUtils.setUserBeanAvatar(user,avatar);
+                        UserUtils.setUserBeanNick(user,nameText);
+                    }
+
+
                     mTvNothing.setVisibility(View.GONE);
-                    nameText.setText(toAddUsername);
-                    UserUtils.setUserBeanAvatar(user,avatar);
-                    UserUtils.setUserBeanNick(user,nameText);
 
                 } else {
                     searchedUserLayout.setVisibility(View.GONE);
@@ -130,14 +146,10 @@ public class AddContactActivity extends BaseActivity{
 	 * @param view
 	 */
 	public void addContact(View view){
-		if(SuperWeChatApplication.getInstance().getUserName().equals(nameText.getText().toString())){
-			String str = getString(cn.ucai.superwechat.R.string.not_add_myself);
-			startActivity(new Intent(this, AlertDialog.class).putExtra("msg", str));
-			return;
-		}
+
 		
 		if(((DemoHXSDKHelper) HXSDKHelper.getInstance()).getContactList().containsKey(nameText.getText().toString())){
-		    //提示已在好友列表中，无需添加
+            //提示已在好友列表中，无需添加
 		    if(EMContactManager.getInstance().getBlackListUsernames().contains(nameText.getText().toString())){
 		        startActivity(new Intent(this, AlertDialog.class).putExtra("msg", "此用户已是你好友(被拉黑状态)，从黑名单列表中移出即可"));
 		        return;
@@ -164,7 +176,7 @@ public class AddContactActivity extends BaseActivity{
 						public void run() {
 							progressDialog.dismiss();
 							String s1 = getResources().getString(cn.ucai.superwechat.R.string.send_successful);
-							Toast.makeText(getApplicationContext(), s1, 1).show();
+							Toast.makeText(getApplicationContext(), s1, Toast.LENGTH_LONG).show();
 						}
 					});
 				} catch (final Exception e) {
@@ -172,7 +184,7 @@ public class AddContactActivity extends BaseActivity{
 						public void run() {
 							progressDialog.dismiss();
 							String s2 = getResources().getString(cn.ucai.superwechat.R.string.Request_add_buddy_failure);
-							Toast.makeText(getApplicationContext(), s2 + e.getMessage(), 1).show();
+							Toast.makeText(getApplicationContext(), s2 + e.getMessage(), Toast.LENGTH_LONG).show();
 						}
 					});
 				}
