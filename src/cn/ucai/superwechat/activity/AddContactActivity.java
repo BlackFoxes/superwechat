@@ -108,7 +108,7 @@ public class AddContactActivity extends BaseActivity{
 
 
     }
-
+//删除联系人
 
     private Response.Listener<User> responseFindUserListener() {
         return new Response.Listener<User>() {
