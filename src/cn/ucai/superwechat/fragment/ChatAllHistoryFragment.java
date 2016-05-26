@@ -6,8 +6,10 @@ import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -23,6 +25,7 @@ import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.Interpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
@@ -299,4 +302,32 @@ public class ChatAllHistoryFragment extends Fragment implements View.OnClickList
     @Override
     public void onClick(View v) {        
     }
+
+	class ContacListChangedReceiver extends BroadcastReceiver {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			adapter.notifyDataSetChanged();
+
+		}
+
+
+
+	}
+	private ContacListChangedReceiver mContacListChangedReceiver;
+
+	private void registerContactListChangedReceiver() {
+		mContacListChangedReceiver = new ContacListChangedReceiver();
+		IntentFilter filter = new IntentFilter("update_contact_list");
+		getActivity().registerReceiver(mContacListChangedReceiver, filter);
+	}
+
+
+	@Override
+	public void onDestroy() {
+			super.onDestroy();
+		if (mContacListChangedReceiver!=null) {
+			getActivity().unregisterReceiver(mContacListChangedReceiver);
+		}
+	}
 }
