@@ -13,8 +13,6 @@
  */
 package cn.ucai.superwechat.activity;
 
-import java.util.List;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,11 +28,14 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import cn.ucai.superwechat.applib.controller.HXSDKHelper;
 import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMGroupManager;
-import cn.ucai.superwechat.adapter.GroupAdapter;
 import com.easemob.util.EMLog;
+
+import java.util.List;
+
+import cn.ucai.superwechat.adapter.GroupAdapter;
+import cn.ucai.superwechat.applib.controller.HXSDKHelper;
 
 public class GroupsActivity extends BaseActivity {
 	public static final String TAG = "GroupsActivity";
@@ -144,8 +145,32 @@ public class GroupsActivity extends BaseActivity {
 		} else {
 			progressBar.setVisibility(View.GONE);
 		}
+
 		
 		refresh();
+	}
+
+
+
+	private void setListener() {
+		setOnCheckchangedListener();
+		setSaveGroupClickListener();
+		setGroupIconClickListener();
+	}
+
+	private void setGroupIconClickListener() {
+
+
+	}
+
+	private void setSaveGroupClickListener() {
+
+
+	}
+
+	private void setOnCheckchangedListener() {
+
+
 	}
 
 	/**
@@ -178,7 +203,7 @@ public class GroupsActivity extends BaseActivity {
 		super.onDestroy();
 		instance = null;
 	}
-	
+
 	public void refresh() {
 		if (groupListView != null && groupAdapter != null) {
 			grouplist = EMGroupManager.getInstance().getAllGroups();
