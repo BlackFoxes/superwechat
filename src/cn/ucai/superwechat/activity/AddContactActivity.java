@@ -75,7 +75,7 @@ public class AddContactActivity extends BaseActivity{
 	
 	
 	/**
-	 * 查找contact的修改，自己账号显示Dialog，Content的等价以及trim的应用
+	 * 查找contact的修改，自己账号显示Dialog，Content的等价以及trim的应用(完成添加好友)
 	 */
     public void searchContact(View v) {
 
@@ -116,7 +116,7 @@ public class AddContactActivity extends BaseActivity{
             public void onResponse(User user) {
                 if (user != null) {
                     HashMap<String, Contact> userList =
-                            SuperWeChatApplication.getInstance().getUserList();
+                    SuperWeChatApplication.getInstance().getUserList();
 
                     if (userList.containsKey(user.getMUserName())) {
                         startActivity(new Intent(AddContactActivity.this, UserProfileActivity.class).putExtra("username", user.getMUserName()));
