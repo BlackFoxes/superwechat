@@ -32,9 +32,12 @@ import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.applib.controller.HXSDKHelper;
+import cn.ucai.superwechat.bean.Message;
 import cn.ucai.superwechat.bean.User;
 import cn.ucai.superwechat.data.ApiParams;
 import cn.ucai.superwechat.data.GsonRequest;
+import cn.ucai.superwechat.data.MultipartRequest;
+import cn.ucai.superwechat.data.RequestManager;
 import cn.ucai.superwechat.db.UserDao;
 import cn.ucai.superwechat.domain.EMUser;
 import cn.ucai.superwechat.listener.OnSetAvatarListener;
@@ -289,11 +292,56 @@ public class UserProfileActivity extends BaseActivity implements OnClickListener
 		if (requestCode==OnSetAvatarListener.REQUEST_CROP_PHOTO) {
 			updateUserAvatar();
 		}
+
 	}
 
+	private final String boundary = "apiclient" + System.currentTimeMillis();
+
+	private final String mimeType = "multipart/from-data;boundary=" + boundary;
+
+	byte[] multipartBody;
+
 	private void updateUserAvatar() {
+		dialog = ProgressDialog.show(this, getString(cn.ucai.superwechat.R.string.dl_update_photo),
+				getString(cn.ucai.superwechat.R.string.dl_waiting));
+		dialog.show();
+		try {
+			String url = new ApiParams()
+                    .with(I.AVATAR_TYPE, I.AVATAR_TYPE_USER_PATH)
+                    .with(I.User.USER_NAME, SuperWeChatApplication.getInstance().getUserName())
+                    .getRequestUrl(I.REQUEST_UPLOAD_AVATAR);
+			executeRequest(new MultipartRequest<Message>(url,Message.class,null,
+					requestUpdateUserAvatarListerner(),errorListener(),mimeType,multipartBody));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 
+	}
+
+	private Response.Listener<Message> requestUpdateUserAvatarListerner() {
+
+		return new Response.Listener<Message>() {
+			@Override
+			public void onResponse(Message message) {
+				if (message.isResult()) {
+					RequestManager.getRequestQueue()
+							.getCache().remove(UserUtils.getAvatarPath(SuperWeChatApplication
+							.getInstance().getUserName()));
+					UserUtils.setCurrentUserAvatar(headAvatar);
+				} else {
+					UserUtils.setCurrentUserAvatar(headAvatar);
+					Toast.makeText(UserProfileActivity.this, getString(cn.ucai.superwechat.R.string.toast_updatephoto_fail),
+							Toast.LENGTH_SHORT).show();
+
+
+				}
+				dialog.dismiss();
+
+
+			}
+		};
 	}
 
 	public void startPhotoZoom(Uri uri) {
