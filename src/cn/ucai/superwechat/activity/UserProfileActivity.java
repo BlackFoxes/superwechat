@@ -3,7 +3,6 @@ package cn.ucai.superwechat.activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -30,6 +29,7 @@ import java.io.ByteArrayOutputStream;
 
 import cn.ucai.superwechat.DemoHXSDKHelper;
 import cn.ucai.superwechat.I;
+import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.applib.controller.HXSDKHelper;
 import cn.ucai.superwechat.bean.User;
@@ -37,11 +37,12 @@ import cn.ucai.superwechat.data.ApiParams;
 import cn.ucai.superwechat.data.GsonRequest;
 import cn.ucai.superwechat.db.UserDao;
 import cn.ucai.superwechat.domain.EMUser;
+import cn.ucai.superwechat.listener.OnSetAvatarListener;
 import cn.ucai.superwechat.utils.UserUtils;
 import cn.ucai.superwechat.utils.Utils;
 
 public class UserProfileActivity extends BaseActivity implements OnClickListener{
-	Context mContext;
+	UserProfileActivity mContext;
 	private static final String TAG = UserProfileActivity.class.getName();
 	
 	private static final int REQUESTCODE_PICK = 1;
@@ -53,6 +54,7 @@ public class UserProfileActivity extends BaseActivity implements OnClickListener
 	private TextView tvUsername;
 	private ProgressDialog dialog;
 	private RelativeLayout rlNickName;
+	OnSetAvatarListener mOnSetAvatarListener;
 	
 	
 	
@@ -105,8 +107,10 @@ public class UserProfileActivity extends BaseActivity implements OnClickListener
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case cn.ucai.superwechat.R.id.user_head_avatar:
-			uploadHeadPhoto();
+			mOnSetAvatarListener = new OnSetAvatarListener(mContext, R.id.layout_avatar, getAvatarName(),I.AVATAR_TYPE_USER_PATH);
+//			uploadHeadPhoto();
 			break;
+
 		case cn.ucai.superwechat.R.id.rl_nickname:
 			final EditText editText = new EditText(this);
 			new AlertDialog.Builder(this).setTitle(cn.ucai.superwechat.R.string.setting_nickname).setIcon(android.R.drawable.ic_dialog_info).setView(editText)
@@ -128,7 +132,15 @@ public class UserProfileActivity extends BaseActivity implements OnClickListener
 		}
 
 	}
-	
+	String AvatarName;
+
+	private String getAvatarName() {
+		AvatarName = System.currentTimeMillis()+"";
+		return AvatarName;
+
+
+	}
+
 	public void asyncFetchUserInfo(String username){
 		((DemoHXSDKHelper) HXSDKHelper.getInstance()).getUserProfileManager().asyncGetUserInfo(username, new EMValueCallBack<EMUser>() {
 			
@@ -235,6 +247,10 @@ public class UserProfileActivity extends BaseActivity implements OnClickListener
 							Toast.makeText(UserProfileActivity.this, getString(cn.ucai.superwechat.R.string.toast_updatenick_success), Toast.LENGTH_SHORT)
 									.show();
 							tvNickName.setText(nickName);
+							/**
+                             * 全局变量中Nick的更新，
+							 * 以及UserDao中的Nick的更新
+							 */
 							SuperWeChatApplication.currentUserNick = nickName;
 							User user = SuperWeChatApplication.getInstance().getUser();
 							user.setMUserNick(nickName);
@@ -250,22 +266,34 @@ public class UserProfileActivity extends BaseActivity implements OnClickListener
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		switch (requestCode) {
-		case REQUESTCODE_PICK:
-			if (data == null || data.getData() == null) {
-				return;
-			}
-			startPhotoZoom(data.getData());
-			break;
-		case REQUESTCODE_CUTTING:
-			if (data != null) {
-				setPicToView(data);
-			}
-			break;
-		default:
-			break;
-		}
+//		switch (requestCode) {
+//		case REQUESTCODE_PICK:
+//			if (data == null || data.getData() == null) {
+//				return;
+//			}
+//			startPhotoZoom(data.getData());
+//			break;
+//		case REQUESTCODE_CUTTING:
+//			if (data != null) {
+//				setPicToView(data);
+//			}
+//			break;
+//		default:
+//			break;
+//		}
 		super.onActivityResult(requestCode, resultCode, data);
+		if (resultCode!=RESULT_OK) {
+			return;
+		}
+		mOnSetAvatarListener.setAvatar(requestCode,data,headAvatar);
+		if (requestCode==OnSetAvatarListener.REQUEST_CROP_PHOTO) {
+			updateUserAvatar();
+		}
+	}
+
+	private void updateUserAvatar() {
+
+
 	}
 
 	public void startPhotoZoom(Uri uri) {
