@@ -37,6 +37,7 @@ import cn.ucai.superwechat.Constant;
 import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.adapter.ContactAdapter;
 import cn.ucai.superwechat.bean.Contact;
+import cn.ucai.superwechat.utils.Utils;
 import cn.ucai.superwechat.widget.Sidebar;
 
 public class GroupPickContactsActivity extends BaseActivity {
@@ -101,7 +102,7 @@ public class GroupPickContactsActivity extends BaseActivity {
 	 * @param v
 	 */
 	public void save(View v) {
-		setResult(RESULT_OK, new Intent().putExtra("newmembers", getToBeAddMembers().toArray(new String[0])));
+		setResult(RESULT_OK, new Intent().putExtra("newmembers", getToBeAddMembers()));
 		finish();
 	}
 
@@ -110,17 +111,22 @@ public class GroupPickContactsActivity extends BaseActivity {
 	 * 
 	 * @return
 	 */
-	private List<String> getToBeAddMembers() {
-		List<String> members = new ArrayList<String>();
+	private Contact[] getToBeAddMembers() {
+		Contact[] contacts = new Contact[0];
 		int length = contactAdapter.isCheckedArray.length;
 		for (int i = 0; i < length; i++) {
-			String username = contactAdapter.getItem(i).getMContactCname();
-			if (contactAdapter.isCheckedArray[i] && !exitingMembers.contains(username)) {
-				members.add(username);
+			Contact contact = contactAdapter.getItem(i);
+			if (contactAdapter.isCheckedArray[i] && !exitingMembers.contains(contacts[i].getMContactCname())) {
+
+				Utils.add(contacts,contact);
 			}
 		}
+		if (contacts.length>0) {
+			return contacts;
+		}
+		return null;
 
-		return members;
+
 	}
 
 	/**
