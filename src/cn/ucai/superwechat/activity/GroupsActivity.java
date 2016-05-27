@@ -48,7 +48,6 @@ public class GroupsActivity extends BaseActivity {
 	private View progressBar;
 	private SwipeRefreshLayout swipeRefreshLayout;
 	Handler handler = new Handler();
-
 	class SyncListener implements HXSDKHelper.HXSyncListener {
 		@Override
 		public void onSyncSucess(final boolean success) {
@@ -148,29 +147,6 @@ public class GroupsActivity extends BaseActivity {
 
 		
 		refresh();
-	}
-
-
-
-	private void setListener() {
-		setOnCheckchangedListener();
-		setSaveGroupClickListener();
-		setGroupIconClickListener();
-	}
-
-	private void setGroupIconClickListener() {
-
-
-	}
-
-	private void setSaveGroupClickListener() {
-
-
-	}
-
-	private void setOnCheckchangedListener() {
-
-
 	}
 
 	/**

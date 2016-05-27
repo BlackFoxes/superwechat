@@ -17,6 +17,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -25,14 +26,26 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.android.volley.Response;
 import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMGroupManager;
 import com.easemob.exceptions.EaseMobException;
 
+import java.io.File;
+
 import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.R;
+import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.bean.Contact;
+import cn.ucai.superwechat.bean.Group;
+import cn.ucai.superwechat.bean.Message;
+import cn.ucai.superwechat.bean.User;
+import cn.ucai.superwechat.data.ApiParams;
+import cn.ucai.superwechat.data.GsonRequest;
+import cn.ucai.superwechat.data.OkHttpUtils;
 import cn.ucai.superwechat.listener.OnSetAvatarListener;
+import cn.ucai.superwechat.utils.ImageUtils;
+import cn.ucai.superwechat.utils.Utils;
 
 public class NewGroupActivity extends BaseActivity {
 	private EditText groupNameEditText;
@@ -42,6 +55,7 @@ public class NewGroupActivity extends BaseActivity {
 	private CheckBox memberCheckbox;
 	private ImageView groupsAvatar;
 	private LinearLayout openInviteContainer;
+	private final static String TAG = NewGroupActivity.class + "";
 
 	NewGroupActivity mContext;
 	private static final int CREATE_NEW_GROUP = 200;
@@ -148,7 +162,7 @@ public class NewGroupActivity extends BaseActivity {
 	}
 
 	private void createNewGroup(final Intent data) {
-		final String st2 = getResources().getString(cn.ucai.superwechat.R.string.Failed_to_create_groups);
+			final String st2 = getResources().getString(cn.ucai.superwechat.R.string.Failed_to_create_groups);
 		new Thread(new Runnable() {
             @Override
             public void run() {
@@ -180,6 +194,8 @@ public class NewGroupActivity extends BaseActivity {
 						emGroup = EMGroupManager.getInstance().createPrivateGroup(groupName, desc, members, memberCheckbox.isChecked(), 200);
 					}
 					String hxid = emGroup.getGroupId();
+					createNewGroupAppServer(emGroup.getGroupId(),groupName,desc,contacts);
+
 					runOnUiThread(new Runnable() {
                         public void run() {
                             progressDialog.dismiss();
@@ -199,6 +215,110 @@ public class NewGroupActivity extends BaseActivity {
             }
         }).start();
 	}
+
+	private void createNewGroupAppServer(String hxid, String gourpName,
+										 String desc, final Contact[]contacts) {
+		User user = SuperWeChatApplication.getInstance().getUser();
+		boolean isPublic = checkBox.isChecked();
+		boolean isInvite = memberCheckbox.isChecked();
+		/**
+		 * 注册环信服务器
+		 * 注册远端服务器并上传头像
+		 * 添加群成员
+		 */
+		File file = new File(ImageUtils.getAvatarPath(mContext,I.AVATAR_TYPE_GROUP_PATH),
+				avatarName+I.AVATAR_SUFFIX_JPG);
+		OkHttpUtils<Group> utils = new OkHttpUtils<>();
+		utils.url(SuperWeChatApplication.SERVER_ROOT)
+				.addParam(I.KEY_REQUEST, I.REQUEST_CREATE_GROUP)
+				.addParam(I.Group.GROUP_ID, hxid)
+				.addParam(I.Group.NAME, gourpName)
+				.addParam(I.Group.DESCRIPTION, desc)
+				.addParam(I.Group.OWNER, user.getMUserName())
+				.addParam(I.Group.IS_PUBLIC, isPublic + "")
+				.addParam(I.Group.ALLOW_INVITES, isInvite + "")
+				.addFile(file)
+				.targetClass(Group.class)
+				.execute(new OkHttpUtils.OnCompleteListener<Group>() {
+					@Override
+					public void onSuccess(Group result) {
+						if (result.isResult()) {
+							if (contacts != null) {
+								addGroupMembers(contacts,result);
+
+							} else {
+								SuperWeChatApplication.getInstance().getGroupList().add(result);
+								progressDialog.dismiss();
+								setResult(RESULT_OK);
+								mContext.sendBroadcast(new Intent("update_group_list"));
+								finish();
+
+							}
+
+						} else {
+							Utils.showToast(mContext,Utils.getResourceString(mContext,result.getMsg()),Toast.LENGTH_SHORT);
+							progressDialog.dismiss();
+
+
+						}
+					}
+
+					@Override
+					public void onError(String error) {
+						progressDialog.dismiss();
+						Utils.showToast(mContext, error, Toast.LENGTH_LONG);
+						Log.i(TAG, "register fail error : " + error);
+					}
+				});
+
+	}
+
+	private void addGroupMembers(Contact[] contacts,Group group) {
+		String userIds = "";
+		String userName = "";
+		Integer mGroupId = group.getMGroupId();
+		for (int i=0;i<contacts.length;i++) {
+			userIds += contacts[i].getMContactCid() + ",";
+			userName += contacts[i].getMContactCname() + ",";
+
+		}
+
+		try {
+			String path = new ApiParams()
+                    .with(I.Member.USER_ID, userIds)
+                    .with(I.Member.USER_NAME, userName)
+                    .with(I.Member.GROUP_HX_ID, mGroupId + "")
+                    .getRequestUrl(I.REQUEST_ADD_GROUP_MEMBERS);
+			executeRequest(new GsonRequest<Message>(path,Message.class,
+					responseAddMemebersListener(group),errorListener()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+
+	}
+
+	private Response.Listener<Message> responseAddMemebersListener(final Group group) {
+		return new Response.Listener<Message>() {
+			@Override
+			public void onResponse(Message message) {
+				if (message.isResult()) {
+					progressDialog.dismiss();
+					SuperWeChatApplication.getInstance().getGroupList().add(group);
+					Intent intent = new Intent("update_group_list").putExtra("group", group);
+					Utils.showToast(mContext, group.getMsg(), Toast.LENGTH_SHORT);
+					setResult(RESULT_OK, intent);
+
+
+				} else {
+					progressDialog.dismiss();
+					Utils.showToast(mContext, R.string.Failed_to_create_groups, Toast.LENGTH_SHORT);
+				}
+				finish();
+			}
+		};
+	}
+
 
 	private void setProgressDialog() {
 		String st1 = getResources().getString(R.string.Is_to_create_a_group_chat);
