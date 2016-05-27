@@ -53,7 +53,6 @@ public class ContactAdapter extends BaseAdapter implements SectionIndexer{
 	private MyFilter myFilter;
     private boolean notiyfyByFilter;
 	Context mContext;
-
 	public ContactAdapter(Context context, int resource, ArrayList<Contact> objects) {
 		mContext = context;
 		this.res = resource;
@@ -204,7 +203,6 @@ public class ContactAdapter extends BaseAdapter implements SectionIndexer{
 		public MyFilter(List<Contact> myList) {
 			this.mOriginalList = myList;
 		}
-
 		@Override
 		protected synchronized FilterResults performFiltering(CharSequence prefix) {
 			FilterResults results = new FilterResults();
@@ -213,7 +211,6 @@ public class ContactAdapter extends BaseAdapter implements SectionIndexer{
 			}
 			EMLog.d(TAG, "contacts original size: " + mOriginalList.size());
 			EMLog.d(TAG, "contacts copy size: " + copyUserList.size());
-			
 			if(prefix==null || prefix.length()==0){
 				results.values = copyUserList;
 				results.count = copyUserList.size();
@@ -248,7 +245,6 @@ public class ContactAdapter extends BaseAdapter implements SectionIndexer{
 			EMLog.d(TAG, "contacts filter results size: " + results.count);
 			return results;
 		}
-
 		@Override
 		protected synchronized void publishResults(CharSequence constraint,
 				FilterResults results) {
@@ -264,8 +260,6 @@ public class ContactAdapter extends BaseAdapter implements SectionIndexer{
 			}
 		}
 	}
-	
-	
 	@Override
 	public void notifyDataSetChanged() {
 	    super.notifyDataSetChanged();

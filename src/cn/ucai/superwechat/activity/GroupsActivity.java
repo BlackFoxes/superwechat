@@ -102,14 +102,11 @@ public class GroupsActivity extends BaseActivity {
 		swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright, android.R.color.holo_green_light,
 				android.R.color.holo_orange_light, android.R.color.holo_red_light);
 	}
-
 	private void initView() {
 		setContentView(cn.ucai.superwechat.R.layout.fragment_groups);
 		progressBar = (View)findViewById(cn.ucai.superwechat.R.id.progress_bar);
 		groupListView = (ListView) findViewById(cn.ucai.superwechat.R.id.list);
 		swipeRefreshLayout = (SwipeRefreshLayout) findViewById(cn.ucai.superwechat.R.id.swipe_layout);
-
-
 	}
 
 	private void setListener() {
