@@ -9,6 +9,8 @@ import com.android.volley.toolbox.NetworkImageView;
 import com.easemob.util.HanziToPinyin;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+
 import cn.ucai.superwechat.Constant;
 import cn.ucai.superwechat.DemoHXSDKHelper;
 import cn.ucai.superwechat.I;
@@ -16,6 +18,7 @@ import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.applib.controller.HXSDKHelper;
 import cn.ucai.superwechat.bean.Contact;
+import cn.ucai.superwechat.bean.Group;
 import cn.ucai.superwechat.bean.User;
 import cn.ucai.superwechat.data.RequestManager;
 import cn.ucai.superwechat.domain.EMUser;
@@ -226,4 +229,59 @@ public class UserUtils {
 			}
 		}
 	}
+
+	/**
+	 * 有关群主头像的方法
+	 * @param mGroupHxid
+	 * @param imageView
+     */
+
+	public static void setGroupBeanAvatar(String mGroupHxid,NetworkImageView imageView) {
+		if (mGroupHxid!=null&&mGroupHxid.isEmpty()) {
+			setGroupAvatar(getGroupAvatarPath(mGroupHxid),imageView);
+
+		}
+
+	}
+
+	public static String getGroupAvatarPath(String hxid) {
+		if (hxid==null||hxid.isEmpty()) return null;
+		return I.REQUEST_DOWNLOAD_AVATAR_GROUP + hxid;
+
+	}
+
+	public static void setGroupAvatar(String url, NetworkImageView imageView) {
+		if (url==null||url.isEmpty()) return;
+		imageView.setDefaultImageResId(R.drawable.group_icon);
+		imageView.setImageUrl(url,RequestManager.getImageLoader());
+		imageView.setErrorImageResId(R.drawable.group_icon);
+
+
+	}
+	public static String getPinYinFromHanZi(String hanzi) {
+		String pinyin = "";
+
+		for(int i=0;i<hanzi.length();i++){
+			String s = hanzi.substring(i,i+1);
+			pinyin = pinyin + HanziToPinyin.getInstance()
+					.get(s).get(0).target.toLowerCase();
+		}
+		return pinyin;
+	}
+
+	public static Group getGroupBeanFromHxid(String hxid) {
+		if (hxid != null && !hxid.isEmpty()) {
+			ArrayList<Group> groupList = SuperWeChatApplication.getInstance().getGroupList();
+			for (Group group : groupList) {
+				if (group.getMGroupHxid().equals(hxid)) {
+					return group;
+				}
+				return null;
+			}
+		}
+		return null;
+	}
+
+
+
 }
