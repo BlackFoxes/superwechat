@@ -86,7 +86,7 @@ public class AddContactActivity extends BaseActivity{
                     return;
                 }
 
-                if(SuperWeChatApplication.getInstance().getUserName().equals(name.trim())){
+                if(SuperWeChatApplication.getInstance().getUser().getMUserName().equals(name.trim())){
                     String str = getString(cn.ucai.superwechat.R.string.not_add_myself);
                     startActivity(new Intent(AddContactActivity.this, AlertDialog.class).putExtra("msg", str));
                     return;
