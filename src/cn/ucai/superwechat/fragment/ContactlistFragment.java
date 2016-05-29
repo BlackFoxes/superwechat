@@ -13,14 +13,6 @@
  */
 package cn.ucai.superwechat.fragment;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -51,7 +43,17 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import cn.ucai.superwechat.I;
+import com.easemob.chat.EMContactManager;
+import com.easemob.exceptions.EaseMobException;
+import com.easemob.util.EMLog;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import cn.ucai.superwechat.Constant;
+import cn.ucai.superwechat.DemoHXSDKHelper;
 import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.activity.AddContactActivity;
@@ -61,20 +63,15 @@ import cn.ucai.superwechat.activity.MainActivity;
 import cn.ucai.superwechat.activity.NewFriendsMsgActivity;
 import cn.ucai.superwechat.activity.PublicChatRoomsActivity;
 import cn.ucai.superwechat.activity.RobotsActivity;
+import cn.ucai.superwechat.adapter.ContactAdapter;
 import cn.ucai.superwechat.applib.controller.HXSDKHelper;
 import cn.ucai.superwechat.applib.controller.HXSDKHelper.HXSyncListener;
-import com.easemob.chat.EMContactManager;
-import cn.ucai.superwechat.Constant;
-import cn.ucai.superwechat.DemoHXSDKHelper;
-import cn.ucai.superwechat.adapter.ContactAdapter;
 import cn.ucai.superwechat.bean.Contact;
-import cn.ucai.superwechat.db.InviteMessgeDao;
 import cn.ucai.superwechat.db.EMUserDao;
+import cn.ucai.superwechat.db.InviteMessgeDao;
 import cn.ucai.superwechat.domain.EMUser;
 import cn.ucai.superwechat.utils.UserUtils;
 import cn.ucai.superwechat.widget.Sidebar;
-import com.easemob.exceptions.EaseMobException;
-import com.easemob.util.EMLog;
 
 /**
  * 联系人列表页
@@ -217,6 +214,7 @@ public class ContactlistFragment extends Fragment {
 			public void onClick(View v) {
 				query.getText().clear();
 				hideSoftKeyboard();
+				refresh();
 			}
 		});
 		adapter = new ContactAdapter(getActivity(), cn.ucai.superwechat.R.layout.row_contact, mContactList);
@@ -302,12 +300,13 @@ public class ContactlistFragment extends Fragment {
 				} else if (Constant.GROUP_USERNAME.equals(username)) {
 					// 进入群聊列表页面
 					startActivity(new Intent(getActivity(), GroupsActivity.class));
-				} else if(Constant.CHAT_ROOM.equals(username)){
-					//进入聊天室列表页面
-					startActivity(new Intent(getActivity(), PublicChatRoomsActivity.class));
-				}else if(Constant.CHAT_ROBOT.equals(username)){
-					//进入Robot列表页面
-					startActivity(new Intent(getActivity(), RobotsActivity.class));
+//				} else if(Constant.CHAT_ROOM.equals(username)){
+//					//进入聊天室列表页面
+//					startActivity(new Intent(getActivity(), PublicChatRoomsActivity.class));
+//				}else if(Constant.CHAT_ROBOT.equals(username)){
+//					//进入Robot列表页面
+//					startActivity(new Intent(getActivity(), RobotsActivity.class));
+//				}
 				}else {
 					// demo中直接进入聊天页面，实际一般是进入用户详情页
 					startActivity(new Intent(getActivity(), ChatActivity.class).putExtra("userId", adapter.getItem(position).getMContactCname()));

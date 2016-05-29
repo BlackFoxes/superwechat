@@ -13,8 +13,6 @@
  */
 package cn.ucai.superwechat.adapter;
 
-import java.util.List;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
@@ -32,6 +30,9 @@ import android.widget.Toast;
 
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMGroupManager;
+
+import java.util.List;
+
 import cn.ucai.superwechat.db.InviteMessgeDao;
 import cn.ucai.superwechat.domain.InviteMessage;
 import cn.ucai.superwechat.domain.InviteMessage.InviteMesageStatus;
@@ -45,6 +46,15 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 		super(context, textViewResourceId, objects);
 		this.context = context;
 		messgeDao = new InviteMessgeDao(context);
+	}
+	private static class ViewHolder {
+		ImageView avator;
+		TextView name;
+		TextView reason;
+		Button status;
+		LinearLayout groupContainer;
+		TextView groupname;
+		// TextView time;
 	}
 
 	@Override
@@ -149,7 +159,7 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 				try {
 					if(msg.getGroupId() == null) //同意好友请求
 						EMChatManager.getInstance().acceptInvitation(msg.getFrom());
-					else //同意加群申请
+					else//同意加群申请
 					    EMGroupManager.getInstance().acceptApplication(msg.getFrom(), msg.getGroupId());
 					((Activity) context).runOnUiThread(new Runnable() {
 
@@ -173,7 +183,7 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 						@Override
 						public void run() {
 							pd.dismiss();
-							Toast.makeText(context, str3 + e.getMessage(), 1).show();
+							Toast.makeText(context, str3 + e.getMessage(), Toast.LENGTH_LONG).show();
 						}
 					});
 
@@ -182,14 +192,6 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 		}).start();
 	}
 
-	private static class ViewHolder {
-		ImageView avator;
-		TextView name;
-		TextView reason;
-		Button status;
-		LinearLayout groupContainer;
-		TextView groupname;
-		// TextView time;
-	}
+
 
 }

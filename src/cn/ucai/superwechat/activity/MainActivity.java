@@ -523,6 +523,8 @@ public class MainActivity extends BaseActivity implements EMEventListener {
 
 	/***
 	 * 好友变化listener
+	 * 首先是在环信添加新增加的好友
+	 *
 	 * 
 	 */
 	public class MyContactListener implements EMContactListener {
@@ -575,8 +577,8 @@ public class MainActivity extends BaseActivity implements EMEventListener {
 					if (contact!=null&&contact.isResult()) {
 						HashMap<String, Contact> userList = SuperWeChatApplication.getInstance().getUserList();
 						ArrayList<Contact> contactList = SuperWeChatApplication.getInstance().getContactList();
-						if (userList.containsKey(contact.getMContactCname())) {
-							userList.put(contact.getMContactCname(), contact);
+						if (!userList.containsKey(contact.getMContactCname())) {
+							userList.put(contact.getMContactCname(), contact);//好友的名字好友的属性
 							contactList.add(contact);
 							sendStickyBroadcast(new Intent("update_contact_list"));
 
