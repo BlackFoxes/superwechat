@@ -47,7 +47,6 @@ import cn.ucai.superwechat.utils.Utils;
 public class UserProfileActivity extends BaseActivity implements OnClickListener{
 	UserProfileActivity mContext;
 	private static final String TAG = UserProfileActivity.class.getName();
-	
 	private static final int REQUESTCODE_PICK = 1;
 	private static final int REQUESTCODE_CUTTING = 2;
 	private NetworkImageView headAvatar;
@@ -58,6 +57,7 @@ public class UserProfileActivity extends BaseActivity implements OnClickListener
 	private ProgressDialog dialog;
 	private RelativeLayout rlNickName;
 	OnSetAvatarListener mOnSetAvatarListener;
+
 	
 	
 	
@@ -225,7 +225,8 @@ public class UserProfileActivity extends BaseActivity implements OnClickListener
 
 
 	private void updateRemoteNick(final String nickName) {
-		dialog = ProgressDialog.show(this, getString(cn.ucai.superwechat.R.string.dl_update_nick), getString(cn.ucai.superwechat.R.string.dl_waiting));
+		dialog = ProgressDialog.show(this, getString(cn.ucai.superwechat.R.string.dl_update_nick),
+				getString(cn.ucai.superwechat.R.string.dl_waiting));
 		new Thread(new Runnable() {
 
 			@Override
@@ -237,7 +238,8 @@ public class UserProfileActivity extends BaseActivity implements OnClickListener
 				if (!updatenick) {
 					runOnUiThread(new Runnable() {
 						public void run() {
-							Toast.makeText(UserProfileActivity.this, getString(cn.ucai.superwechat.R.string.toast_updatenick_fail), Toast.LENGTH_SHORT)
+							Toast.makeText(UserProfileActivity.this,
+									getString(cn.ucai.superwechat.R.string.toast_updatenick_fail), Toast.LENGTH_SHORT)
 									.show();
 							dialog.dismiss();
 						}
@@ -247,7 +249,8 @@ public class UserProfileActivity extends BaseActivity implements OnClickListener
 						@Override
 						public void run() {
 							dialog.dismiss();
-							Toast.makeText(UserProfileActivity.this, getString(cn.ucai.superwechat.R.string.toast_updatenick_success), Toast.LENGTH_SHORT)
+							Toast.makeText(UserProfileActivity.this,
+									getString(cn.ucai.superwechat.R.string.toast_updatenick_success), Toast.LENGTH_SHORT)
 									.show();
 							tvNickName.setText(nickName);
 							/**
@@ -257,7 +260,7 @@ public class UserProfileActivity extends BaseActivity implements OnClickListener
 							SuperWeChatApplication.currentUserNick = nickName;
 							User user = SuperWeChatApplication.getInstance().getUser();
 							user.setMUserNick(nickName);
-							UserDao userDao = new UserDao(mContext);
+							UserDao userDao = new UserDao(UserProfileActivity.this);
 							userDao.updateUser(user);
 
 						}

@@ -177,13 +177,9 @@ public class NewGroupActivity extends BaseActivity {
 					for (int i=0;i<contacts.length;i++) {
 						members[i] = contacts[i].getMContactCname()+",";
 						membersID[i] = contacts[i].getMContactId()+",";
-
-
 					}
-
 				}
 				EMGroup emGroup;
-
                 try {
                     if(checkBox.isChecked()){
                         //创建公开群，此种方式创建的群，可以自由加入
