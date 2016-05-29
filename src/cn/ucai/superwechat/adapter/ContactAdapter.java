@@ -108,7 +108,7 @@ public class ContactAdapter extends BaseAdapter implements SectionIndexer{
 		//显示申请与通知item
 		if(username.equals(Constant.NEW_FRIENDS_USERNAME)){
 		    holder.nameTextview.setText(user.getMUserNick());
-		    holder.avatar.setImageResource(cn.ucai.superwechat.R.drawable.new_friends_icon);
+		    holder.avatar.setDefaultImageResId(cn.ucai.superwechat.R.drawable.new_friends_icon);
 			int unreadMsgCount=((DemoHXSDKHelper) HXSDKHelper.getInstance()).
 					getContactList().get(Constant.NEW_FRIENDS_USERNAME)
 					.getUnreadMsgCount();
@@ -121,15 +121,15 @@ public class ContactAdapter extends BaseAdapter implements SectionIndexer{
 		}else if(username.equals(Constant.GROUP_USERNAME)){
 			//群聊item
 		    holder.nameTextview.setText(user.getMUserNick());
-		    holder.avatar.setImageResource(cn.ucai.superwechat.R.drawable.groups_icon);
-		}else if(username.equals(Constant.CHAT_ROOM)){
-            //群聊item
-            holder.nameTextview.setText(user.getMUserNick());
-            holder.avatar.setImageResource(cn.ucai.superwechat.R.drawable.groups_icon);
-		}else if(username.equals(Constant.CHAT_ROBOT)){
-			//Robot item
-			holder.nameTextview.setText(user.getMUserNick());
-			holder.avatar.setImageResource(cn.ucai.superwechat.R.drawable.groups_icon);
+		    holder.avatar.setDefaultImageResId(cn.ucai.superwechat.R.drawable.groups_icon);
+//		}else if(username.equals(Constant.CHAT_ROOM)){
+//            //群聊item
+//            holder.nameTextview.setText(user.getMUserNick());
+//            holder.avatar.setImageResource(cn.ucai.superwechat.R.drawable.groups_icon);
+//		}else if(username.equals(Constant.CHAT_ROBOT)){
+//			//Robot item
+//			holder.nameTextview.setText(user.getMUserNick());
+//			holder.avatar.setImageResource(cn.ucai.superwechat.R.drawable.groups_icon);
 		}else{
 //		    holder.nameTextview.setText(user.getNick());
 		    //设置用户头像
