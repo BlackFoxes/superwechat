@@ -40,21 +40,21 @@ import cn.ucai.superwechat.bean.Group;
 import cn.ucai.superwechat.utils.UserUtils;
 
 public class GroupAdapter extends BaseAdapter implements SectionIndexer {
-	List<String> list;
+	private String newGroup;
+	private String addPublicGroup;
 	private static final String TAG = GroupAdapter.class.getName();
 	ArrayList<Group> groupList;
 	ArrayList<Group> copyGroupList;
 	private LayoutInflater inflater;
-	private String newGroup;
-	private String addPublicGroup;
 	private MyFilter myFilter;
 	private boolean notiyfyByFilter;
 	private SparseIntArray positionOfSection;
+	List<String> list;
 	private SparseIntArray sectionOfPosition;
 	Context mContext;
 	public GroupAdapter(Context context, int res, ArrayList<Group> groups) {
-		this.groupList = groups;
-		this.copyGroupList = new ArrayList<Group>();
+		groupList = groups;
+		copyGroupList = new ArrayList<Group>();
 		copyGroupList.addAll(groups);
 		this.inflater = LayoutInflater.from(context);
 		newGroup = context.getResources().getString(cn.ucai.superwechat.R.string.The_new_group_chat);

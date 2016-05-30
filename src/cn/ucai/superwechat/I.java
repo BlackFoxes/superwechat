@@ -217,4 +217,5 @@ public interface I {
 	/**  下载群组头像的网络请求*/
 	String REQUEST_DOWNLOAD_AVATAR_GROUP			=		SuperWeChatApplication.SERVER_ROOT+ "?"
 			+ KEY_REQUEST + "=" +REQUEST_DOWNLOAD_GROUP_AVATAR + "&" +AVATAR_TYPE + "=";
+	String REQUEST_FIND_PUBLIC_GROUP_BY_HXID 		= 		"find_public_group_by_group_hxid";
 }
