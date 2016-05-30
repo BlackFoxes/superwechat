@@ -14,16 +14,16 @@
 
 package cn.ucai.superwechat.activity;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -44,7 +44,7 @@ public class PublicGroupsActivity extends BaseActivity {
 	private ProgressBar pb;
 	private ListView listView;
 	private GroupsAdapter adapter;
-	
+
 	private List<EMGroupInfo> groupsList;
 	private boolean isLoading;
 	private boolean isFirstLoading = true;
@@ -55,42 +55,34 @@ public class PublicGroupsActivity extends BaseActivity {
     private ProgressBar footLoadingPB;
     private TextView footLoadingText;
     private Button searchBtn;
-    
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(cn.ucai.superwechat.R.layout.activity_public_groups);
-
-		pb = (ProgressBar) findViewById(cn.ucai.superwechat.R.id.progressBar);
-		listView = (ListView) findViewById(cn.ucai.superwechat.R.id.list);
+        initView();
 		groupsList = new ArrayList<EMGroupInfo>();
-		searchBtn = (Button) findViewById(cn.ucai.superwechat.R.id.btn_search);
-		
-		View footView = getLayoutInflater().inflate(cn.ucai.superwechat.R.layout.listview_footer_view, null);
-        footLoadingLayout = (LinearLayout) footView.findViewById(cn.ucai.superwechat.R.id.loading_layout);
-        footLoadingPB = (ProgressBar)footView.findViewById(cn.ucai.superwechat.R.id.loading_bar);
-        footLoadingText = (TextView) footView.findViewById(cn.ucai.superwechat.R.id.loading_text);
-        listView.addFooterView(footView, null, false);
-        footLoadingLayout.setVisibility(View.GONE);
-        
         //获取及显示数据
         loadAndShowData();
-        
-        //设置item点击事件
-        listView.setOnItemClickListener(new OnItemClickListener() {
+        setListener();
+
+
+
+	}
+
+    private void setListener() {
+        setItemClickListener();
+        setScrollListener();
+
+
+    }
+
+    private void setScrollListener() {
+        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
 
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                startActivity(new Intent(PublicGroupsActivity.this, GroupSimpleDetailActivity.class).
-                        putExtra("groupinfo", adapter.getItem(position)));
-            }
-        });
-        listView.setOnScrollListener(new OnScrollListener() {
-            
-            @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
-                if(scrollState == OnScrollListener.SCROLL_STATE_IDLE){
+                if(scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE){
                     if(listView.getCount() != 0){
                         int lasPos = view.getLastVisiblePosition();
                         if(hasMoreData && !isLoading && lasPos == listView.getCount()-1){
@@ -99,23 +91,53 @@ public class PublicGroupsActivity extends BaseActivity {
                     }
                 }
             }
-            
+
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                
+
             }
         });
-        
-	}
-	
-	/**
+
+
+    }
+
+    private void setItemClickListener() {
+        //设置item点击事件
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                startActivity(new Intent(PublicGroupsActivity.this, GroupSimpleDetailActivity.class).
+                        putExtra("groupinfo", adapter.getItem(position)));
+            }
+        });
+
+
+    }
+
+    private void initView() {
+        setContentView(cn.ucai.superwechat.R.layout.activity_public_groups);
+        pb = (ProgressBar) findViewById(cn.ucai.superwechat.R.id.progressBar);
+        listView = (ListView) findViewById(cn.ucai.superwechat.R.id.list);
+        searchBtn = (Button) findViewById(cn.ucai.superwechat.R.id.btn_search);
+        View footView = getLayoutInflater().inflate(cn.ucai.superwechat.R.layout.listview_footer_view, null);
+        footLoadingLayout = (LinearLayout) footView.findViewById(cn.ucai.superwechat.R.id.loading_layout);
+        footLoadingPB = (ProgressBar)footView.findViewById(cn.ucai.superwechat.R.id.loading_bar);
+        footLoadingText = (TextView) footView.findViewById(cn.ucai.superwechat.R.id.loading_text);
+        listView.addFooterView(footView, null, false);
+        footLoadingLayout.setVisibility(View.GONE);
+
+
+    }
+
+    /**
 	 * 搜索
 	 * @param view
 	 */
 	public void search(View view){
 	    startActivity(new Intent(this, PublicGroupsSeachActivity.class));
 	}
-	
+
 	private void loadAndShowData(){
 	    new Thread(new Runnable() {
 
@@ -192,8 +214,33 @@ public class PublicGroupsActivity extends BaseActivity {
 			return convertView;
 		}
 	}
-	
+
 	public void back(View view){
 		finish();
 	}
+
+    class publicGroupChangedReceiver extends BroadcastReceiver{
+
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            loadAndShowData();
+
+        }
+    }
+
+    publicGroupChangedReceiver mReceiver;
+
+    private void registerPublicGroupChangedReceiver() {
+        mReceiver = new publicGroupChangedReceiver();
+        IntentFilter filter = new IntentFilter("update_public_group");
+        registerReceiver(mReceiver, filter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mReceiver!=null)
+            unregisterReceiver(mReceiver);
+    }
 }
