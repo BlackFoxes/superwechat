@@ -73,6 +73,7 @@ public class PublicGroupsActivity extends BaseActivity {
     private void setListener() {
         setItemClickListener();
         setScrollListener();
+        registerPublicGroupChangedReceiver();
 
 
     }
