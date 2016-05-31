@@ -41,6 +41,8 @@ import android.widget.Toast;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMGroupManager;
+
+import cn.ucai.superwechat.bean.Group;
 import cn.ucai.superwechat.utils.UserUtils;
 import cn.ucai.superwechat.widget.ExpandGridView;
 import com.easemob.exceptions.EaseMobException;
@@ -88,6 +90,7 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 	private RelativeLayout changeGroupNameLayout;
     private RelativeLayout idLayout;
     private TextView idText;
+	Group mGroup;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +98,9 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 	    
 	    // 获取传过来的groupid
         groupId = getIntent().getStringExtra("groupId");
-        group = EMGroupManager.getInstance().getGroup(groupId);
+		mGroup = (Group) getIntent().getSerializableExtra("group");
+		group = EMGroupManager.getInstance().getGroup(groupId);
+
 
         // we are not supposed to show the group if we don't find the group
         if(group == null){
@@ -147,7 +152,7 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 		
 		List<String> members = new ArrayList<String>();
 		members.addAll(group.getMembers());
-		
+
 		adapter = new GridAdapter(this, cn.ucai.superwechat.R.layout.grid, members);
 		userGridview.setAdapter(adapter);
 
@@ -239,7 +244,7 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 										((TextView) findViewById(cn.ucai.superwechat.R.id.group_name)).setText(returnData + "(" + group.getAffiliationsCount()
 												+ st);
 										progressDialog.dismiss();
-										Toast.makeText(getApplicationContext(), st6, 0).show();
+										Toast.makeText(getApplicationContext(), st6, Toast.LENGTH_SHORT).show();
 									}
 								});
 								
@@ -248,7 +253,7 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 								runOnUiThread(new Runnable() {
 									public void run() {
 										progressDialog.dismiss();
-										Toast.makeText(getApplicationContext(), st7, 0).show();
+										Toast.makeText(getApplicationContext(), st7, Toast.LENGTH_SHORT).show();
 									}
 								});
 							}
@@ -267,14 +272,14 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 								public void run() {
 								    refreshMembers();
 									progressDialog.dismiss();
-									Toast.makeText(getApplicationContext(), stsuccess, 0).show();
+									Toast.makeText(getApplicationContext(), stsuccess, Toast.LENGTH_SHORT).show();
 								}
 							});
 						} catch (EaseMobException e) {
 							runOnUiThread(new Runnable() {
 								public void run() {
 									progressDialog.dismiss();
-									Toast.makeText(getApplicationContext(), st9, 0).show();
+									Toast.makeText(getApplicationContext(), st9, Toast.LENGTH_SHORT).show();
 								}
 							});
 						}
@@ -289,7 +294,9 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 	}
 
 	private void refreshMembers(){
-	    adapter.clear();
+		String title = mGroup + "(" + mGroup.getMGroupAffiliationsCount() + ")";
+		((TextView) findViewById(cn.ucai.superwechat.R.id.group_name)).setText(title);
+		adapter.clear();
         
         List<String> members = new ArrayList<String>();
         members.addAll(group.getMembers());
@@ -354,7 +361,7 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 					runOnUiThread(new Runnable() {
 						public void run() {
 							progressDialog.dismiss();
-							Toast.makeText(getApplicationContext(), getResources().getString(cn.ucai.superwechat.R.string.Exit_the_group_chat_failure) + " " + e.getMessage(), 1).show();
+							Toast.makeText(getApplicationContext(), getResources().getString(cn.ucai.superwechat.R.string.Exit_the_group_chat_failure) + " " + e.getMessage(), Toast.LENGTH_LONG).show();
 						}
 					});
 				}
@@ -386,7 +393,7 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 					runOnUiThread(new Runnable() {
 						public void run() {
 							progressDialog.dismiss();
-							Toast.makeText(getApplicationContext(), st5 + e.getMessage(), 1).show();
+							Toast.makeText(getApplicationContext(), st5 + e.getMessage(), Toast.LENGTH_LONG).show();
 						}
 					});
 				}
@@ -424,7 +431,7 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 					runOnUiThread(new Runnable() {
 						public void run() {
 							progressDialog.dismiss();
-							Toast.makeText(getApplicationContext(), st6 + e.getMessage(), 1).show();
+							Toast.makeText(getApplicationContext(), st6 + e.getMessage(), Toast.LENGTH_LONG).show();
 						}
 					});
 				}
@@ -462,7 +469,7 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
                             runOnUiThread(new Runnable() {
                                 public void run() {
                                     progressDialog.dismiss();
-                                    Toast.makeText(getApplicationContext(), st7, 1).show();
+                                    Toast.makeText(getApplicationContext(), st7, Toast.LENGTH_LONG).show();
                                 }
                             });
                             
@@ -496,7 +503,7 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
                             runOnUiThread(new Runnable() {
                                 public void run() {
                                     progressDialog.dismiss();
-                                    Toast.makeText(getApplicationContext(), st9, 1).show();
+                                    Toast.makeText(getApplicationContext(), st9, Toast.LENGTH_LONG).show();
                                 }
                             });
                         }
@@ -649,7 +656,7 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 								return;
 							}
 							if (!NetUtils.hasNetwork(getApplicationContext())) {
-								Toast.makeText(getApplicationContext(), getString(cn.ucai.superwechat.R.string.network_unavailable), 0).show();
+								Toast.makeText(getApplicationContext(), getString(cn.ucai.superwechat.R.string.network_unavailable), Toast.LENGTH_SHORT).show();
 								return;
 							}
 							EMLog.d("group", "remove user from group:" + username);
@@ -696,7 +703,7 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 									deleteDialog.dismiss();
 									runOnUiThread(new Runnable() {
 										public void run() {
-											Toast.makeText(getApplicationContext(), st14 + e.getMessage(), 1).show();
+											Toast.makeText(getApplicationContext(), st14 + e.getMessage(), Toast.LENGTH_LONG).show();
 										}
 									});
 								}

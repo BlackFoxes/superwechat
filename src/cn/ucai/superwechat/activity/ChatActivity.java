@@ -59,7 +59,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Response;
 import com.easemob.EMChatRoomChangeListener;
 import com.easemob.EMError;
 import com.easemob.EMEventListener;
@@ -90,12 +89,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import cn.ucai.superwechat.DemoHXSDKHelper;
-import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.adapter.ExpressionAdapter;
 import cn.ucai.superwechat.adapter.ExpressionPagerAdapter;
@@ -103,16 +100,14 @@ import cn.ucai.superwechat.adapter.MessageAdapter;
 import cn.ucai.superwechat.adapter.VoicePlayClickListener;
 import cn.ucai.superwechat.applib.controller.HXSDKHelper;
 import cn.ucai.superwechat.applib.model.GroupRemoveListener;
+import cn.ucai.superwechat.bean.Group;
 import cn.ucai.superwechat.bean.Member;
-import cn.ucai.superwechat.data.ApiParams;
-import cn.ucai.superwechat.data.GsonRequest;
 import cn.ucai.superwechat.domain.RobotUser;
 import cn.ucai.superwechat.task.DownloadGroupMemberTask;
 import cn.ucai.superwechat.utils.CommonUtils;
 import cn.ucai.superwechat.utils.ImageUtils;
 import cn.ucai.superwechat.utils.SmileUtils;
 import cn.ucai.superwechat.utils.UserUtils;
-import cn.ucai.superwechat.utils.Utils;
 import cn.ucai.superwechat.widget.ExpandGridView;
 import cn.ucai.superwechat.widget.PasteEditText;
 
@@ -200,6 +195,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, EMEve
 	private boolean haveMoreData = true;
 	private Button btnMore;
 	public String playMsgId;
+	Group mGroup;
 
 	private SwipeRefreshLayout swipeRefreshLayout;
 
@@ -533,6 +529,15 @@ public class ChatActivity extends BaseActivity implements OnClickListener, EMEve
 //			} catch (Exception e) {
 //				e.printStackTrace();
 //			}
+			ArrayList<Group> groupList = SuperWeChatApplication.getInstance().getGroupList();
+			for (Group group : groupList) {
+				if (group.getMGroupHxid().equals(toChatUsername)) {
+					mGroup = group;
+					return;
+
+				}
+
+			}
 
 		}
 		group = EMGroupManager.getInstance().getGroup(toChatUsername);
@@ -944,7 +949,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, EMEve
 	 * @param content
 	 *            message content
 	 * @param
-	 *            boolean resend
+	 *
 	 */
 	public void sendText(String content) {
 
@@ -1288,7 +1293,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener, EMEve
 			return;
 		}
 		if(chatType == CHATTYPE_GROUP){
-			startActivityForResult((new Intent(this, GroupDetailsActivity.class).putExtra("groupId", toChatUsername)),
+			startActivityForResult((new Intent(this, GroupDetailsActivity.class).putExtra("groupId", toChatUsername))
+							.putExtra("group", mGroup),
 					REQUEST_CODE_GROUP_DETAIL);
 		}else{
 			startActivityForResult((new Intent(this, ChatRoomDetailsActivity.class).putExtra("roomId", toChatUsername)),
