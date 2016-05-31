@@ -19,6 +19,7 @@ import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.applib.controller.HXSDKHelper;
 import cn.ucai.superwechat.bean.Contact;
 import cn.ucai.superwechat.bean.Group;
+import cn.ucai.superwechat.bean.Member;
 import cn.ucai.superwechat.bean.User;
 import cn.ucai.superwechat.data.RequestManager;
 import cn.ucai.superwechat.domain.EMUser;
@@ -131,6 +132,19 @@ public class UserUtils {
 	/**
 	 * 设置用户昵称
 	 */
+	private static Member getGroupMember(String hxid,String username) {
+		ArrayList<Member> members = SuperWeChatApplication.getInstance().getGroupMembers().get(hxid);
+		if (members!=null) {
+			for (Member member : members) {
+				if (member.getMUserName().equals(username)) {
+					return member;
+				}
+			}
+
+		}
+
+		return null;
+	}
 	public static void setUserNick(String username,TextView textView){
 		EMUser user = getUserInfo(username);
 		if(user != null){
@@ -139,6 +153,15 @@ public class UserUtils {
 			textView.setText(username);
 		}
 	}
+
+	public static void setGroupMemberNick(String hxid,String username,TextView textView) {
+		Member member = getGroupMember(hxid, username);
+		if (member!=null) {
+			setUserBeanNick(member,textView);
+		}
+
+	}
+
 
 	/**
 	 * 设置显示自己的昵称
