@@ -31,29 +31,34 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.NetworkImageView;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMGroupManager;
+import com.easemob.exceptions.EaseMobException;
 
 import java.util.List;
 
 import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.activity.NewFriendsMsgActivity;
+import cn.ucai.superwechat.bean.Group;
 import cn.ucai.superwechat.bean.User;
 import cn.ucai.superwechat.data.ApiParams;
 import cn.ucai.superwechat.data.GsonRequest;
 import cn.ucai.superwechat.db.InviteMessgeDao;
 import cn.ucai.superwechat.domain.InviteMessage;
 import cn.ucai.superwechat.domain.InviteMessage.InviteMesageStatus;
+import cn.ucai.superwechat.task.DownloadGroupMemberTask;
 import cn.ucai.superwechat.utils.UserUtils;
 
 public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 
 	private Context context;
 	private InviteMessgeDao messgeDao;
+	ProgressDialog pd;
 
 	public NewFriendsMsgAdapter(Context context, int textViewResourceId, List<InviteMessage> objects) {
 		super(context, textViewResourceId, objects);
 		this.context = context;
 		messgeDao = new InviteMessgeDao(context);
 	}
+
 	private static class ViewHolder {
 		NetworkImageView avator;
 		TextView name;
@@ -81,23 +86,23 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
-		
+
 		String str1 = context.getResources().getString(cn.ucai.superwechat.R.string.Has_agreed_to_your_friend_request);
 		String str2 = context.getResources().getString(cn.ucai.superwechat.R.string.agree);
-		
+
 		String str3 = context.getResources().getString(cn.ucai.superwechat.R.string.Request_to_add_you_as_a_friend);
 		String str4 = context.getResources().getString(cn.ucai.superwechat.R.string.Apply_to_the_group_of);
 		String str5 = context.getResources().getString(cn.ucai.superwechat.R.string.Has_agreed_to);
 		String str6 = context.getResources().getString(cn.ucai.superwechat.R.string.Has_refused_to);
 		final InviteMessage msg = getItem(position);
 		if (msg != null) {
-			if(msg.getGroupId() != null){ // 显示群聊提示
+			if (msg.getGroupId() != null) { // 显示群聊提示
 				holder.groupContainer.setVisibility(View.VISIBLE);
 				holder.groupname.setText(msg.getGroupName());
-			} else{
+			} else {
 				holder.groupContainer.setVisibility(View.GONE);
 			}
-			
+
 			holder.reason.setText(msg.getReason());
 //			holder.name.setText(msg.getFrom());
 			// holder.time.setText(DateUtils.getTimestampString(new
@@ -110,12 +115,12 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 				holder.status.setEnabled(true);
 				holder.status.setBackgroundResource(android.R.drawable.btn_default);
 				holder.status.setText(str2);
-				if(msg.getStatus() == InviteMesageStatus.BEINVITEED){
+				if (msg.getStatus() == InviteMesageStatus.BEINVITEED) {
 					if (msg.getReason() == null) {
 						// 如果没写理由
 						holder.reason.setText(str3);
 					}
-				}else{ //入群申请
+				} else { //入群申请
 					if (TextUtils.isEmpty(msg.getReason())) {
 						holder.reason.setText(str4 + msg.getGroupName());
 					}
@@ -133,20 +138,20 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 				holder.status.setText(str5);
 				holder.status.setBackgroundDrawable(null);
 				holder.status.setEnabled(false);
-			} else if(msg.getStatus() == InviteMesageStatus.REFUSED){
+			} else if (msg.getStatus() == InviteMesageStatus.REFUSED) {
 				holder.status.setText(str6);
 				holder.status.setBackgroundDrawable(null);
 				holder.status.setEnabled(false);
 			}
 
 			// 设置用户头像
-			UserUtils.setUserAvatar(UserUtils.getAvatarPath(msg.getFrom()),holder.avator);
+			UserUtils.setUserAvatar(UserUtils.getAvatarPath(msg.getFrom()), holder.avator);
 			try {
 				String path = new ApiParams()
-                        .with(I.User.USER_NAME, msg.getFrom())
-                        .getRequestUrl(I.REQUEST_FIND_USER);
-				((NewFriendsMsgActivity )context).executeRequest(new GsonRequest<User>(path,
-						User.class,responseFindUserListener(holder.name),((NewFriendsMsgActivity )context).errorListener()));
+						.with(I.User.USER_NAME, msg.getFrom())
+						.getRequestUrl(I.REQUEST_FIND_USER);
+				((NewFriendsMsgActivity) context).executeRequest(new GsonRequest<User>(path,
+						User.class, responseFindUserListener(holder.name), ((NewFriendsMsgActivity) context).errorListener()));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -169,15 +174,16 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 
 	/**
 	 * 同意好友请求或者群申请
-	 * 
+	 *
 	 * @param button
-	 * @param msg username
+	 * @param msg    username
 	 */
 	private void acceptInvitation(final Button button, final InviteMessage msg) {
-		final ProgressDialog pd = new ProgressDialog(context);
+
 		String str1 = context.getResources().getString(cn.ucai.superwechat.R.string.Are_agree_with);
 		final String str2 = context.getResources().getString(cn.ucai.superwechat.R.string.Has_agreed_to);
 		final String str3 = context.getResources().getString(cn.ucai.superwechat.R.string.Agree_with_failure);
+		pd = new ProgressDialog(context);
 		pd.setMessage(str1);
 		pd.setCanceledOnTouchOutside(false);
 		pd.show();
@@ -186,26 +192,35 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 			public void run() {
 				// 调用sdk的同意方法
 				try {
-					if(msg.getGroupId() == null) //同意好友请求
+					if (msg.getGroupId() == null) { //同意好友请求
 						EMChatManager.getInstance().acceptInvitation(msg.getFrom());
-					else//同意加群申请
-					    EMGroupManager.getInstance().acceptApplication(msg.getFrom(), msg.getGroupId());
-					((Activity) context).runOnUiThread(new Runnable() {
+						EMGroupManager.getInstance().acceptApplication(msg.getFrom(), msg.getGroupId());
+						((Activity) context).runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								pd.dismiss();
+								button.setText(str2);
+								msg.setStatus(InviteMesageStatus.AGREED);
+								// 更新db
+								ContentValues values = new ContentValues();
+								values.put(InviteMessgeDao.COLUMN_NAME_STATUS, msg.getStatus().ordinal());
+								messgeDao.updateMessage(msg.getId(), values);
+								button.setBackgroundDrawable(null);
+								button.setEnabled(false);
 
-						@Override
-						public void run() {
-							pd.dismiss();
-							button.setText(str2);
-							msg.setStatus(InviteMesageStatus.AGREED);
-							// 更新db
-							ContentValues values = new ContentValues();
-							values.put(InviteMessgeDao.COLUMN_NAME_STATUS, msg.getStatus().ordinal());
-							messgeDao.updateMessage(msg.getId(), values);
-							button.setBackgroundDrawable(null);
-							button.setEnabled(false);
+							}
+						});
+					} else {
+						String path = new ApiParams()
+								.with(I.Member.USER_NAME, msg.getFrom())
+								.with(I.Member.GROUP_HX_ID, msg.getGroupId())
+								.getRequestUrl(I.REQUEST_ADD_GROUP_MEMBER_BY_USERNAME);
+						((NewFriendsMsgActivity) context).executeRequest(new GsonRequest<Group>(path,
+								Group.class, responseFindGroupMemeberListnener( button, msg), ((NewFriendsMsgActivity) context).errorListener()));
 
-						}
-					});
+					}//同意加群申请
+					//
+
 				} catch (final Exception e) {
 					((Activity) context).runOnUiThread(new Runnable() {
 
@@ -221,6 +236,46 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 		}).start();
 	}
 
+	private Response.Listener<Group> responseFindGroupMemeberListnener(final Button button,  final InviteMessage msg) {
+		return new Response.Listener<Group>() {
+			@Override
+			public void onResponse(Group group) {
+				final String str2 = context.getResources().getString(cn.ucai.superwechat.R.string.agree);
+
+				if (group != null && group.isResult()) {
+					new DownloadGroupMemberTask(context, group.getMGroupHxid()).execute();
+
+					try {
+						EMGroupManager.getInstance().acceptApplication(msg.getFrom(), msg.getGroupId());
+						((Activity) context).runOnUiThread(new Runnable() {
+
+							@Override
+							public void run() {
+								pd.dismiss();
+								button.setText(str2);
+								msg.setStatus(InviteMesageStatus.AGREED);
+								// 更新db
+								ContentValues values = new ContentValues();
+								values.put(InviteMessgeDao.COLUMN_NAME_STATUS, msg.getStatus().ordinal());
+								messgeDao.updateMessage(msg.getId(), values);
+								button.setBackgroundDrawable(null);
+								button.setEnabled(false);
+
+							}
+						});
+					} catch (EaseMobException e) {
+						e.printStackTrace();
+					}
 
 
+
+
+
+
+				}
+			}
+		};
+
+
+	}
 }
