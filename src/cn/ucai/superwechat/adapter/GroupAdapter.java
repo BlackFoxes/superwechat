@@ -78,7 +78,6 @@ public class GroupAdapter extends BaseAdapter implements SectionIndexer {
 			return 3;
 		}
 	}
-
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		if (getItemViewType(position) == 0) {

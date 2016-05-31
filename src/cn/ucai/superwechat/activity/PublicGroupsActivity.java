@@ -67,9 +67,6 @@ public class PublicGroupsActivity extends BaseActivity {
     private ProgressBar footLoadingPB;
     private TextView footLoadingText;
     private Button searchBtn;
-
-
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -79,22 +76,13 @@ public class PublicGroupsActivity extends BaseActivity {
         //获取及显示数据
         loadAndShowData();
         setListener();
-
-
-
 	}
-
     private void setListener() {
         setItemClickListener();
         setScrollListener();
         registerPublicGroupChangedReceiver();
         setQueueTextChangedListener();
-
-
     }
-
-
-
     private void setQueueTextChangedListener() {
         final EditText query = (EditText)findViewById(cn.ucai.superwechat.R.id.query);
         final ImageButton clearSearch = (ImageButton)findViewById(cn.ucai.superwechat.R.id.search_clear);
@@ -120,13 +108,7 @@ public class PublicGroupsActivity extends BaseActivity {
                 query.getText().clear();
             }
         });
-
     }
-
-
-
-
-
     private void setScrollListener() {
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
 
@@ -145,30 +127,22 @@ public class PublicGroupsActivity extends BaseActivity {
                     }
                 }
             }
-
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 
             }
         });
-
-
     }
-
     private void setItemClickListener() {
         //设置item点击事件
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 startActivity(new Intent(PublicGroupsActivity.this, GroupSimpleDetailActivity.class).
                         putExtra("groupinfo", adapter.getItem(position)));
             }
         });
-
-
     }
-
     private void initView() {
         setContentView(cn.ucai.superwechat.R.layout.activity_public_groups);
         pb = (ProgressBar) findViewById(cn.ucai.superwechat.R.id.progressBar);
@@ -180,8 +154,6 @@ public class PublicGroupsActivity extends BaseActivity {
         footLoadingText = (TextView) footView.findViewById(cn.ucai.superwechat.R.id.loading_text);
         listView.addFooterView(footView, null, false);
         footLoadingLayout.setVisibility(View.GONE);
-
-
     }
 
     /**
@@ -191,7 +163,6 @@ public class PublicGroupsActivity extends BaseActivity {
 	public void search(View view){
 	    startActivity(new Intent(this, PublicGroupsSeachActivity.class));
 	}
-
 	private void loadAndShowData() {
         new Thread(new Runnable() {
             public void run() {
@@ -209,8 +180,6 @@ public class PublicGroupsActivity extends BaseActivity {
 
 
                     }
-
-
 //                        public void run() {
 //                            groupsList.addAll(returnGroups);
                     searchBtn.setVisibility(View.VISIBLE);
@@ -265,27 +234,20 @@ public class PublicGroupsActivity extends BaseActivity {
             List<String> list;
             private SparseIntArray sectionOfPosition;
             Context mContext;
-
-
             public GroupsAdapter(Context context, int res, ArrayList<Group> groups) {
                 this.inflater = LayoutInflater.from(context);
                 mGroupsList = groups;
                 copyGroupList = new ArrayList<Group>();
                 copyGroupList.addAll(groups);
-
             }
-
-
             @Override
             public int getCount() {
                 return mGroupsList == null ? 0 : mGroupsList.size();
             }
-
             @Override
             public Group getItem(int position) {
                 return mGroupsList.get(position);
             }
-
             @Override
             public long getItemId(int position) {
                 return 0;
@@ -303,7 +265,6 @@ public class PublicGroupsActivity extends BaseActivity {
 
                 return convertView;
             }
-
             @Override
             public Object[] getSections() {
                 positionOfSection = new SparseIntArray();
@@ -327,20 +288,16 @@ public class PublicGroupsActivity extends BaseActivity {
                 }
                 return list.toArray(new String[list.size()]);
             }
-
             @Override
             public int getPositionForSection(int sectionIndex) {
                 return positionOfSection.get(sectionIndex);
             }
-
             @Override
             public int getSectionForPosition(int position) {
                 return sectionOfPosition.get(position);
-
             }
             private class  MyFilter extends Filter {
                 List<Group> mOriginalList = null;
-
                 public MyFilter(List<Group> myList) {
                     this.mOriginalList = myList;
                 }
@@ -363,7 +320,6 @@ public class PublicGroupsActivity extends BaseActivity {
                             final Group user = mOriginalList.get(i);
                             String username = user.getMGroupName();
 //					String nick = UserUtils.getPinYinFromHanZi(user.getMGroupDescription());
-
                             if(username.contains(prefixString)){
                                 newValues.add(user);
                             }
@@ -409,12 +365,10 @@ public class PublicGroupsActivity extends BaseActivity {
             }
 
         }
-
     class publicGroupChangedReceiver extends BroadcastReceiver{
         @Override
         public void onReceive(Context context, Intent intent) {
             loadAndShowData();
-
         }
     }
 

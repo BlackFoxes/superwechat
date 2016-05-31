@@ -14,17 +14,25 @@
 
 package cn.ucai.superwechat.activity;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.Response;
 import com.android.volley.toolbox.NetworkImageView;
+import com.easemob.chat.EMGroupManager;
+import com.easemob.exceptions.EaseMobException;
 
+import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.R;
 import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.bean.Group;
+import cn.ucai.superwechat.data.ApiParams;
+import cn.ucai.superwechat.data.GsonRequest;
 import cn.ucai.superwechat.utils.UserUtils;
 
 public class GroupSimpleDetailActivity extends BaseActivity {
@@ -55,11 +63,11 @@ public class GroupSimpleDetailActivity extends BaseActivity {
 			groupname = groupInfo.getMGroupName();
 		    groupid = groupInfo.getMGroupHxid();
 		}else{
-//		    group = PublicGroupsSeachActivity.searchedGroup;
-//		    if(group == null)
-//		        return;
-//		    groupname = group.getGroupName();
-//		    groupid = group.getGroupId();
+		    group = PublicGroupsSeachActivity.searchedGroup;
+		    if(group == null)
+		        return;
+		    groupname = group.getMGroupName();
+		    groupid = group.getMGroupHxid();
 		}
 		
 		tv_name.setText(groupname);
@@ -96,51 +104,86 @@ public class GroupSimpleDetailActivity extends BaseActivity {
 		
 	}
 	
-//	//加入群聊
-//	public void addToGroup(View view){
-//		String st1 = getResources().getString(cn.ucai.superwechat.R.string.Is_sending_a_request);
-//		final String st2 = getResources().getString(cn.ucai.superwechat.R.string.Request_to_join);
-//		final String st3 = getResources().getString(cn.ucai.superwechat.R.string.send_the_request_is);
-//		final String st4 = getResources().getString(cn.ucai.superwechat.R.string.Join_the_group_chat);
-//		final String st5 = getResources().getString(cn.ucai.superwechat.R.string.Failed_to_join_the_group_chat);
-//		final ProgressDialog pd = new ProgressDialog(this);
-////		getResources().getString(R.string)
-//		pd.setMessage(st1);
-//		pd.setCanceledOnTouchOutside(false);
-//		pd.show();
-//		new Thread(new Runnable() {
-//			public void run() {
-//				try {
-//					//如果是membersOnly的群，需要申请加入，不能直接join
-//					if(group.isMembersOnly()){
-//					    EMGroupManager.getInstance().applyJoinToGroup(groupid, st2);
-//					}else{
-//					    EMGroupManager.getInstance().joinGroup(groupid);
-//					}
-//					runOnUiThread(new Runnable() {
-//						public void run() {
-//							pd.dismiss();
-//							if(group.isMembersOnly())
-//								Toast.makeText(GroupSimpleDetailActivity.this, st3, Toast.LENGTH_SHORT).show();
-//							else
-//								Toast.makeText(GroupSimpleDetailActivity.this, st4, Toast.LENGTH_SHORT).show();
-//							btn_add_group.setEnabled(false);
-//						}
-//					});
-//				} catch (final EaseMobException e) {
-//					e.printStackTrace();
-//					runOnUiThread(new Runnable() {
-//						public void run() {
-//							pd.dismiss();
-//							Toast.makeText(GroupSimpleDetailActivity.this, st5+e.getMessage(), Toast.LENGTH_SHORT).show();
-//						}
-//					});
-//				}
-//			}
-//		}).start();
-//	}
-	
-     private void showGroupDetail() {
+	//加入群聊
+	public void addToGroup(View view){
+		String st1 = getResources().getString(cn.ucai.superwechat.R.string.Is_sending_a_request);
+		final String st2 = getResources().getString(cn.ucai.superwechat.R.string.Request_to_join);
+		final String st3 = getResources().getString(cn.ucai.superwechat.R.string.send_the_request_is);
+		final String st4 = getResources().getString(cn.ucai.superwechat.R.string.Join_the_group_chat);
+		final String st5 = getResources().getString(cn.ucai.superwechat.R.string.Failed_to_join_the_group_chat);
+		final ProgressDialog pd = new ProgressDialog(this);
+//		getResources().getString(R.string)
+		pd.setMessage(st1);
+		pd.setCanceledOnTouchOutside(false);
+		pd.show();
+		try {
+			String path = new ApiParams()
+					.with(I.Group.HX_ID, groupid)
+					.getRequestUrl(I.REQUEST_FIND_PUBLIC_GROUP_BY_HXID);
+			executeRequest(new GsonRequest<Group>(path,Group.class,
+					responseFindPublicGroupListener(),errorListener()));
+		} catch (Exception e) {
+			e.printStackTrace();
+
+		}
+
+		new Thread(new Runnable() {
+			public void run() {
+				try {
+					//如果是membersOnly的群，需要申请加入，不能直接join
+					if(group.getMGroupAllowInvites()){
+					    EMGroupManager.getInstance().applyJoinToGroup(groupid, st2);
+					}else{
+					    EMGroupManager.getInstance().joinGroup(groupid);
+					}
+					runOnUiThread(new Runnable() {
+						public void run() {
+							pd.dismiss();
+							if(group.getMGroupAllowInvites())
+								Toast.makeText(GroupSimpleDetailActivity.this, st3, Toast.LENGTH_SHORT).show();
+							else
+								Toast.makeText(GroupSimpleDetailActivity.this, st4, Toast.LENGTH_SHORT).show();
+							btn_add_group.setEnabled(false);
+						}
+					});
+				} catch (final EaseMobException e) {
+					e.printStackTrace();
+					runOnUiThread(new Runnable() {
+						public void run() {
+							pd.dismiss();
+							Toast.makeText(GroupSimpleDetailActivity.this, st5+e.getMessage(), Toast.LENGTH_SHORT).show();
+						}
+					});
+				}
+			}
+		}).start();
+	}
+
+	private Response.Listener<Group> responseFindPublicGroupListener() {
+		return new Response.Listener<Group>() {
+			@Override
+			public void onResponse(Group group) {
+				if (group != null) {
+					showGroupDetail();
+
+
+
+				} else {
+					final String st1 = getResources().getString(R.string.Failed_to_get_group_chat_information);
+					runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							progressBar.setVisibility(View.INVISIBLE);
+							Toast.makeText(GroupSimpleDetailActivity.this,st1,Toast.LENGTH_LONG).show();
+						}
+					});
+
+
+				}
+			}
+		};
+	}
+	private void showGroupDetail() {
          progressBar.setVisibility(View.INVISIBLE);
          //获取详情成功，并且自己不在群中，才让加入群聊按钮可点击
          if(!SuperWeChatApplication.getInstance().getPublicGroupList().contains(group))
