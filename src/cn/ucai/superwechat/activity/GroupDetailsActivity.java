@@ -36,6 +36,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Response;
 import com.android.volley.toolbox.NetworkImageView;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMGroup;
@@ -47,10 +48,15 @@ import com.easemob.util.NetUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.SuperWeChatApplication;
 import cn.ucai.superwechat.bean.Group;
 import cn.ucai.superwechat.bean.Member;
+import cn.ucai.superwechat.bean.Message;
+import cn.ucai.superwechat.data.ApiParams;
+import cn.ucai.superwechat.data.GsonRequest;
 import cn.ucai.superwechat.utils.UserUtils;
+import cn.ucai.superwechat.utils.Utils;
 import cn.ucai.superwechat.widget.ExpandGridView;
 
 public class GroupDetailsActivity extends BaseActivity implements OnClickListener {
@@ -351,16 +357,14 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 		new Thread(new Runnable() {
 			public void run() {
 				try {
-				    EMGroupManager.getInstance().exitFromGroup(groupId);
-					runOnUiThread(new Runnable() {
-						public void run() {
-							progressDialog.dismiss();
-							setResult(RESULT_OK);
-							finish();
-							if(ChatActivity.activityInstance != null)
-							    ChatActivity.activityInstance.finish();
-						}
-					});
+					String path = new ApiParams()
+							.with(I.Member.GROUP_ID, mGroup.getMGroupId() + "")
+							.with(I.Member.USER_NAME, currentUserName)
+							.getRequestUrl(I.REQUEST_DELETE_GROUP_MEMBER);
+					executeRequest(new GsonRequest<Message>(path,Message.class,
+							responseDeleteGroupMember(),errorListener()));
+
+
 				} catch (final Exception e) {
 					runOnUiThread(new Runnable() {
 						public void run() {
@@ -371,6 +375,40 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 				}
 			}
 		}).start();
+	}
+
+	private Response.Listener<Message> responseDeleteGroupMember() {
+		return new Response.Listener<Message>() {
+			@Override
+			public void onResponse(Message message) {
+				if (message.isResult()) {
+					try {
+						EMGroupManager.getInstance().exitFromGroup(groupId);
+						runOnUiThread(new Runnable() {
+							public void run() {
+								progressDialog.dismiss();
+								setResult(RESULT_OK);
+								finish();
+								if (ChatActivity.activityInstance != null)
+									ChatActivity.activityInstance.finish();
+							}
+						});
+					} catch (EaseMobException e) {
+						e.printStackTrace();
+					}
+
+
+				} else {
+					progressDialog.dismiss();
+					Utils.showToast(GroupDetailsActivity.this,message.getMsg(),Toast.LENGTH_SHORT);
+
+				}
+
+			}
+
+
+
+		};
 	}
 
 	/**
