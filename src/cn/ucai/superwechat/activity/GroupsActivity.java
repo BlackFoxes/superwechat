@@ -81,6 +81,7 @@ public class GroupsActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		instance = this;
+		grouplist = new ArrayList<Group>();
 		initView();
 		initData();
 		setListener();

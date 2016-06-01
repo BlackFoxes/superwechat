@@ -16,6 +16,7 @@ package cn.ucai.superwechat.adapter;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,7 +55,9 @@ public class GroupAdapter extends BaseAdapter implements SectionIndexer {
 	Context mContext;
 	public GroupAdapter(Context context, int res, ArrayList<Group> groups) {
 		groupList = groups;
+		Log.e("mian","groups="+groups);
 		copyGroupList = new ArrayList<Group>();
+		Log.e("mian","copyGroupList="+copyGroupList);
 		copyGroupList.addAll(groups);
 		this.inflater = LayoutInflater.from(context);
 		newGroup = context.getResources().getString(cn.ucai.superwechat.R.string.The_new_group_chat);

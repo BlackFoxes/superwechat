@@ -1416,7 +1416,7 @@ public class MessageAdapter extends BaseAdapter{
 				        Toast.makeText(activity, activity.getString(cn.ucai.superwechat.R.string.send_fail) + activity.getString(cn.ucai.superwechat.R.string.error_send_not_in_the_group), Toast.LENGTH_SHORT)
                         .show();
 				    }else{
-				        Toast.makeText(activity, activity.getString(cn.ucai.superwechat.R.string.send_fail) + activity.getString(cn.ucai.superwechat.R.string.connect_failuer_toast), f0)
+				        Toast.makeText(activity, activity.getString(cn.ucai.superwechat.R.string.send_fail) + activity.getString(cn.ucai.superwechat.R.string.connect_failuer_toast), Toast.LENGTH_SHORT)
                         .show();
 				    }
 				}
