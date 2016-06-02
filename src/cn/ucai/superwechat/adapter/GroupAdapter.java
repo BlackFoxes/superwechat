@@ -55,10 +55,11 @@ public class GroupAdapter extends BaseAdapter implements SectionIndexer {
 	Context mContext;
 	public GroupAdapter(Context context, int res, ArrayList<Group> groups) {
 		groupList = groups;
-		Log.e("mian","groups="+groups);
+		Log.e("mian","groupList="+groups);
 		copyGroupList = new ArrayList<Group>();
 		Log.e("mian","copyGroupList="+copyGroupList);
 		copyGroupList.addAll(groups);
+		Log.e("mian","copyGroupList="+copyGroupList);
 		this.inflater = LayoutInflater.from(context);
 		newGroup = context.getResources().getString(cn.ucai.superwechat.R.string.The_new_group_chat);
 		addPublicGroup = context.getResources().getString(cn.ucai.superwechat.R.string.add_public_group_chat);
@@ -130,7 +131,10 @@ public class GroupAdapter extends BaseAdapter implements SectionIndexer {
 				convertView = inflater.inflate(cn.ucai.superwechat.R.layout.row_group, null);
 			}
 			Group group = getItem(position);
+			Log.i("main", "group=" + group);
 			((TextView) convertView.findViewById(cn.ucai.superwechat.R.id.name)).setText(group.getMGroupName());
+			Log.i("main", "name=" + group.getMGroupName());
+			Log.i("main", "hxidgroup=" + group.getMGroupHxid());
 			UserUtils.setGroupBeanAvatar(group.getMGroupHxid(), (NetworkImageView) convertView.findViewById(R.id.avatar));
 
 

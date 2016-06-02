@@ -16,6 +16,7 @@ package cn.ucai.superwechat.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -114,8 +115,10 @@ public class GroupPickContactsActivity extends BaseActivity {
 	private Contact[] getToBeAddMembers() {
 		Contact[] contacts = new Contact[0];
 		int length = contactAdapter.isCheckedArray.length;
+		Log.i("main", "length=" + length);
 		for (int i = 0; i < length; i++) {
 			Contact contact = contactAdapter.getItem(i);
+			Log.i("main", "contact=" + contact);
 			if (contactAdapter.isCheckedArray[i] && !exitingMembers.contains(contacts[i].getMContactCname())) {
 
 				Utils.add(contacts,contact);

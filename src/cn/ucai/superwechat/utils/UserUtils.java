@@ -260,7 +260,7 @@ public class UserUtils {
      */
 
 	public static void setGroupBeanAvatar(String mGroupHxid,NetworkImageView imageView) {
-		if (mGroupHxid!=null&&mGroupHxid.isEmpty()) {
+		if (mGroupHxid!=null) {
 			setGroupAvatar(getGroupAvatarPath(mGroupHxid),imageView);
 
 		}

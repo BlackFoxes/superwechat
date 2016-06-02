@@ -259,7 +259,8 @@ public class PublicGroupsActivity extends BaseActivity {
                     convertView = inflater.inflate(cn.ucai.superwechat.R.layout.row_group, null);
                 }
                 Group group = getItem(position);
-                UserUtils.setGroupBeanAvatar(group.getMGroupHxid(), (NetworkImageView) convertView.findViewById(R.id.avatar));
+                UserUtils.setGroupBeanAvatar(group.getMGroupHxid(),
+                        (NetworkImageView) convertView.findViewById(R.id.avatar));
 
                 ((TextView) convertView.findViewById(cn.ucai.superwechat.R.id.name)).setText(getItem(position).getMGroupName());
 

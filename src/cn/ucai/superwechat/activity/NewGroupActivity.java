@@ -95,7 +95,7 @@ public class NewGroupActivity extends BaseActivity {
 		findViewById(R.id.cb_Avatar).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				mOnSetAvatarListener = new OnSetAvatarListener(mContext, R.id.layout_new_group,
+				mOnSetAvatarListener = new OnSetAvatarListener(NewGroupActivity.this, R.id.layout_new_group,
 						getAvatarName(), I.AVATAR_TYPE_GROUP_PATH);
 
 
@@ -118,7 +118,7 @@ public class NewGroupActivity extends BaseActivity {
 					startActivity(intent);
 				} else {
 					// 进通讯录选人
-					startActivityForResult(new Intent(mContext, GroupPickContactsActivity.class).putExtra("groupName", name), CREATE_NEW_GROUP);
+					startActivityForResult(new Intent(NewGroupActivity.this, GroupPickContactsActivity.class).putExtra("groupName", name), CREATE_NEW_GROUP);
 				}
 
 			}

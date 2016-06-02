@@ -81,7 +81,6 @@ public class GroupsActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		instance = this;
-		grouplist = new ArrayList<Group>();
 		initView();
 		initData();
 		setListener();
@@ -95,11 +94,11 @@ public class GroupsActivity extends BaseActivity {
 	}
 
 	private void initData() {
+		grouplist = SuperWeChatApplication.getInstance().getGroupList();
 		groupAdapter = new GroupAdapter(this, 1, grouplist);
 		groupListView.setAdapter(groupAdapter);
 		syncListener = new SyncListener();
 		inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-		grouplist = SuperWeChatApplication.getInstance().getGroupList();
 		swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright, android.R.color.holo_green_light,
 				android.R.color.holo_orange_light, android.R.color.holo_red_light);
 	}
