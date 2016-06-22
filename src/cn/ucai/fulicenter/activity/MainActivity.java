@@ -79,10 +79,10 @@ public class MainActivity extends BaseActivity implements EMEventListener {
 	protected static final String TAG = "MainActivity";
 	// 未读消息textview
 	private TextView unreadLabel;
+	private Button[] mTabs;
+
 	// 未读通讯录textview
 	private TextView unreadAddressLable;
-
-	private Button[] mTabs;
 	private ContactlistFragment contactListFragment;
 	// private ChatHistoryFragment chatHistoryFragment;
 	private ChatAllHistoryFragment chatHistoryFragment;
