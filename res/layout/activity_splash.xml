@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:src="@drawable/geek"
+        android:src="@drawable/splash"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"/>
 
@@ -19,16 +19,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="50dip"
+        android:layout_marginBottom="5dip"
         android:gravity="center_horizontal"
         android:orientation="horizontal" >
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="超级微信"
-            android:textColor="#000"
-            android:textSize="20dip"
+            android:text="@string/app_name"
+            android:textColor="@color/gray_normal"
+            android:textSize="14dip"
             android:typeface="normal" >
         </TextView>
 
@@ -38,8 +38,8 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dip"
             android:text="2.2.5"
-            android:textColor="#000"
-            android:textSize="20sp" >
+            android:textColor="@color/gray_normal"
+            android:textSize="14sp" >
         </TextView>
     </LinearLayout>
 

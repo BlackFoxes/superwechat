@@ -15,7 +15,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:gravity="center"
-            android:text="超级微信"
+            android:text="福利社"
             android:textColor="#000"
             android:drawableLeft="@drawable/mobile"/>
     </RelativeLayout>
