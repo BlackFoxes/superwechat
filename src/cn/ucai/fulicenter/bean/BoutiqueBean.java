@@ -1,9 +1,11 @@
 package cn.ucai.fulicenter.bean;
 
+import java.io.Serializable;
+
 /**
  * Created by sks on 2016/6/21.
  */
-public class Boutique {
+public class BoutiqueBean implements Serializable{
 
 
     /**
