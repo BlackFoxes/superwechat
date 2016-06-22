@@ -14,14 +14,11 @@ import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMGroupManager;
 
 import cn.ucai.fulicenter.DemoHXSDKHelper;
-import cn.ucai.fulicenter.I;
 import cn.ucai.fulicenter.R;
 import cn.ucai.fulicenter.SuperWeChatApplication;
 import cn.ucai.fulicenter.bean.User;
 import cn.ucai.fulicenter.db.UserDao;
-import cn.ucai.fulicenter.task.DownloadAllGroupsTask;
 import cn.ucai.fulicenter.task.DownloadContactListTask;
-import cn.ucai.fulicenter.task.DownloadPublicGroupsTask;
 
 /**
  * 开屏页
@@ -62,10 +59,7 @@ public class SplashActivity extends BaseActivity {
 
 			//下载联系人集合
 			new DownloadContactListTask(mContext, userName).execute();
-			//下载群组集合
-			new DownloadAllGroupsTask(mContext, userName).execute();
-			//下载公开群组集合
-			new DownloadPublicGroupsTask(mContext,userName, I.PAGE_ID_DEFAULT,I.PAGE_SIZE_DEFAULT).execute();
+
 		}
 		new Thread(new Runnable() {
 			public void run() {

@@ -57,9 +57,7 @@ import cn.ucai.fulicenter.db.EMUserDao;
 import cn.ucai.fulicenter.db.UserDao;
 import cn.ucai.fulicenter.domain.EMUser;
 import cn.ucai.fulicenter.listener.OnSetAvatarListener;
-import cn.ucai.fulicenter.task.DownloadAllGroupsTask;
 import cn.ucai.fulicenter.task.DownloadContactListTask;
-import cn.ucai.fulicenter.task.DownloadPublicGroupsTask;
 import cn.ucai.fulicenter.utils.CommonUtils;
 import cn.ucai.fulicenter.utils.MD5;
 import cn.ucai.fulicenter.utils.Utils;
@@ -295,9 +293,7 @@ public class LoginActivity extends BaseActivity {
 					//下载联系人集合
 					new DownloadContactListTask(mContext, currentUsername).execute();
 					//下载群组集合
-					new DownloadAllGroupsTask(mContext, currentUsername).execute();
-					//下载公开群组集合
-					new DownloadPublicGroupsTask(mContext, currentUsername, I.PAGE_ID_DEFAULT, I.PAGE_SIZE_DEFAULT).execute();
+
 				}
 			});
 

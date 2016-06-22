@@ -61,7 +61,6 @@ import cn.ucai.fulicenter.R;
 import cn.ucai.fulicenter.SuperWeChatApplication;
 import cn.ucai.fulicenter.activity.AddContactActivity;
 import cn.ucai.fulicenter.activity.ChatActivity;
-import cn.ucai.fulicenter.activity.GroupsActivity;
 import cn.ucai.fulicenter.activity.MainActivity;
 import cn.ucai.fulicenter.activity.NewFriendsMsgActivity;
 import cn.ucai.fulicenter.adapter.ContactAdapter;
@@ -118,7 +117,7 @@ public class ContactlistFragment extends Fragment {
                                 refresh();
 		                    }else{
 		                        String s1 = getResources().getString(cn.ucai.fulicenter.R.string.get_failed_please_check);
-		                        Toast.makeText(getActivity(), s1, 1).show();
+		                        Toast.makeText(getActivity(), s1, Toast.LENGTH_LONG).show();
 		                        progressBar.setVisibility(View.GONE);
 		                    }
 		                }
@@ -300,17 +299,7 @@ public class ContactlistFragment extends Fragment {
 					EMUser user = ((DemoHXSDKHelper)HXSDKHelper.getInstance()).getContactList().get(Constant.NEW_FRIENDS_USERNAME);
 					user.setUnreadMsgCount(0);
 					startActivity(new Intent(getActivity(), NewFriendsMsgActivity.class));
-				} else if (Constant.GROUP_USERNAME.equals(username)) {
-					// 进入群聊列表页面
-					startActivity(new Intent(getActivity(), GroupsActivity.class));
-//				} else if(Constant.CHAT_ROOM.equals(username)){
-//					//进入聊天室列表页面
-//					startActivity(new Intent(getActivity(), PublicChatRoomsActivity.class));
-//				}else if(Constant.CHAT_ROBOT.equals(username)){
-//					//进入Robot列表页面
-//					startActivity(new Intent(getActivity(), RobotsActivity.class));
-//				}
-				}else {
+				} else {
 					// demo中直接进入聊天页面，实际一般是进入用户详情页
 					startActivity(new Intent(getActivity(), ChatActivity.class).putExtra("userId", adapter.getItem(position).getMContactCname()));
 				}
@@ -323,7 +312,7 @@ public class ContactlistFragment extends Fragment {
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		if (((AdapterContextMenuInfo) menuInfo).position > 1) {
+		if (((AdapterContextMenuInfo) menuInfo).position > 0) {
 		    toBeProcessUser = adapter.getItem(((AdapterContextMenuInfo) menuInfo).position);
 		    toBeProcessUsername = toBeProcessUser.getMContactCname();
 			getActivity().getMenuInflater().inflate(cn.ucai.fulicenter.R.menu.context_contact_list, menu);

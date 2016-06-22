@@ -25,10 +25,7 @@ import android.widget.TextView;
 import android.widget.TextView.BufferType;
 
 import com.android.volley.toolbox.NetworkImageView;
-import com.easemob.chat.EMChatManager;
-import com.easemob.chat.EMChatRoom;
 import com.easemob.chat.EMConversation;
-import com.easemob.chat.EMConversation.EMConversationType;
 import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMGroupManager;
 import com.easemob.chat.EMMessage;
@@ -44,7 +41,6 @@ import java.util.Map;
 import cn.ucai.fulicenter.Constant;
 import cn.ucai.fulicenter.DemoHXSDKHelper;
 import cn.ucai.fulicenter.applib.controller.HXSDKHelper;
-import cn.ucai.fulicenter.bean.Group;
 import cn.ucai.fulicenter.domain.RobotUser;
 import cn.ucai.fulicenter.utils.DateUtils;
 import cn.ucai.fulicenter.utils.SmileUtils;
@@ -98,17 +94,7 @@ public class ChatAllHistoryAdapter extends ArrayAdapter<EMConversation> {
 		EMConversation conversation = getItem(position);
 		// 获取用户username或者群组groupid
 		String username = conversation.getUserName();
-		if (conversation.getType() == EMConversationType.GroupChat) {
-			// 群聊消息，显示群聊头像
-			UserUtils.setGroupBeanAvatar(username,holder.avatar);
-			Group group = UserUtils.getGroupBeanFromHxid(username);
-//			EMGroup group = EMGroupManager.getInstance().getGroup(username);
-			holder.name.setText(group != null ? group.getMGroupName() : username);
-		} else if(conversation.getType() == EMConversationType.ChatRoom){
-		    holder.avatar.setImageResource(cn.ucai.fulicenter.R.drawable.group_icon);
-            EMChatRoom room = EMChatManager.getInstance().getChatRoom(username);
-            holder.name.setText(room != null && !TextUtils.isEmpty(room.getName()) ? room.getName() : username);
-		}else {
+
 		    UserUtils.setUserBeanAvatar(username, holder.avatar);
 			if (username.equals(Constant.GROUP_USERNAME)) {
 				holder.name.setText("群聊");
@@ -127,7 +113,7 @@ public class ChatAllHistoryAdapter extends ArrayAdapter<EMConversation> {
 			}else{
 				UserUtils.setUserNick(username, holder.name);
 			}
-		}
+
 
 		if (conversation.getUnreadMsgCount() > 0) {
 			// 显示与此用户的消息未读数
